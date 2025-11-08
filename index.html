@@ -1749,25 +1749,7 @@
                 opacity: 1;
             }
         }
-        /* Export Button Styles */
-        .export-btn {
-            background: linear-gradient(45deg, #4CAF50, #45a049);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px;
-        }
-        .export-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+       
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -1839,14 +1821,7 @@
       <i class="fas fa-download"></i>
      </div>
      <div class="drawer-item-text">
-      Export Data (CSV)
-     </div>
-    </div>
-    <div class="drawer-item" data-view="help">
-     <div class="drawer-item-icon">
-      <i class="fab fa-telegram"></i>
-     </div>
-     <div class="drawer-item-text">
+ 
       Helpful Channel
      </div>
     </div>
@@ -2863,19 +2838,19 @@
         // Show Web Share Modal (Updated without Canva URL)
         function showWebShareModal() {
             const promoText = `🕉️ SANKALP - Transform Your Life!\n\n✨ Join me in this amazing challenge app that helps build good habits and break bad ones.\n\n🎯 Features:\n• 21-365 day challenges\n• Level up system with badges\n• Beautiful animations\n• Progress tracking\n• Vedic wisdom integration\n\n💪 Start your transformation journey today!\n\n#SANKALP #HabitTracker #PersonalGrowth #Mindfulness`;
-            const shareUrl = window.location.href; // Use current URL (GitHub Pages or local)
+            const https://shailuk2023-create.github.io/sankalp/ = window.location.href; // Use current URL (GitHub Pages or local)
             document.getElementById('webshareProgress').textContent = 'Join SANKALP!';
             document.getElementById('webshareSubtitle').textContent = 'Challenge Your Habits';
             // WhatsApp
-            document.getElementById('webWhatsappShare').href = `https://wa.me/?text=${encodeURIComponent(promoText + '\n\n' + shareUrl)}`;
+            document.getElementById('webWhatsappShare').href = `https://wa.me/?text=${encodeURIComponent(promoText + '\n\n' + https://shailuk2023-create.github.io/sankalp/)}`;
             // Facebook
-            document.getElementById('webFacebookShare').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(promoText)}`;
+            document.getElementById('webFacebookShare').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}&quote=${encodeURIComponent(promoText)}`;
             // Twitter
-            document.getElementById('webTwitterShare').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(promoText)}&url=${encodeURIComponent(shareUrl)}`;
+            document.getElementById('webTwitterShare').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(promoText)}&url=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}`;
             // Telegram
-            document.getElementById('webTelegramShare').href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(promoText)}`;
+            document.getElementById('webTelegramShare').href = `https://t.me/share/url?url=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}&text=${encodeURIComponent(promoText)}`;
             // LinkedIn
-            document.getElementById('webLinkedinShare').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(promoText)}`;
+            document.getElementById('webLinkedinShare').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}&summary=${encodeURIComponent(promoText)}`;
             // Instagram
             document.getElementById('webInstagramShare').onclick = (e) => {
                 e.preventDefault();
@@ -3084,23 +3059,23 @@
                                     selectedChallenge?.type === 'build' ? 'Building' : 'Transforming';
          
             const shareText = `🕉️ SANKALP Challenge Progress!\n\n👤 Name: ${userName}\n🎯 Challenge: ${challengeTypeText} ${challengeInfo}\n✅ Days Completed: ${completedCount}/${challengeDuration}\n📊 Progress: ${progressPercentage}%\n\n💪 Transforming my life one day at a time!\n\n#SANKALP #Challenge #PersonalGrowth #Mindfulness`;
-            const shareUrl = window.location.href; // Use current URL
+            const https://shailuk2023-create.github.io/sankalp/ = window.location.href; // Use current URL
             // WhatsApp
             document.getElementById('whatsappShare').href =
-                `https://wa.me/?text=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
+                `https://wa.me/?text=${encodeURIComponent(shareText + '\n\n' + https://shailuk2023-create.github.io/sankalp/)}`;
             // Facebook
             document.getElementById('facebookShare').href =
-                `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+                `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}&quote=${encodeURIComponent(shareText)}`;
             // Twitter
             document.getElementById('twitterShare').href =
-                `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+                `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}`;
             // Telegram
             document.getElementById('telegramShare').href =
-                `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+                `https://t.me/share/url?url=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}&text=${encodeURIComponent(shareText)}`;
             // LinkedIn
             document.getElementById('linkedinShare').href =
-                `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(shareText)}`;
-            // Instagram (opens Instagram app or website)
+                `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(https://shailuk2023-create.github.io/sankalp/)}&summary=${encodeURIComponent(shareText)}`;
+            // Instagram (opens Instagram app orshare)
             document.getElementById('instagramShare').onclick = (e) => {
                 e.preventDefault();
                 // Copy text to clipboard for Instagram
@@ -3354,4 +3329,5 @@
         }, 1000);
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99add6853764b2d3',t:'MTc2MjUyOTA3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+
 </html>
