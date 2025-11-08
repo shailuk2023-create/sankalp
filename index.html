@@ -1,0 +1,3357 @@
+<!doctype html>
+<html lang="hi">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SANKALP - Challenge Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Noto+Sans+Devanagari:wght@400;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans Devanagari', 'Cinzel', serif;
+            background:
+                linear-gradient(135deg, rgba(26, 10, 46, 0.75) 0%, rgba(61, 30, 109, 0.75) 50%, rgba(139, 58, 98, 0.75) 100%),
+                var(--bg-image) center/cover;
+            background-attachment: fixed;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100%;
+            --bg-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        }
+        * {
+            box-sizing: border-box;
+        }
+        /* Welcome Modal */
+        .welcome-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+        }
+        .welcome-content {
+            background: linear-gradient(135deg, rgba(26, 10, 46, 0.98), rgba(61, 30, 109, 0.98));
+            border: 3px solid #ffd700;
+            border-radius: 30px;
+            padding: 50px;
+            text-align: center;
+            max-width: 700px;
+            width: 95%;
+            max-height: 95%;
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(255, 215, 0, 0.4);
+            animation: welcomeSlide 0.8s ease-out;
+        }
+        .welcome-logo {
+            margin-bottom: 25px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .welcome-om {
+            font-size: 80px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .welcome-title {
+            font-size: 42px;
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .welcome-subtitle {
+            font-size: 20px;
+            color: #ff8c00;
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+        .name-input {
+            width: 100%;
+            padding: 18px 25px;
+            font-size: 20px;
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .name-input:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            transform: scale(1.02);
+        }
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        /* Duration Selection */
+        .duration-selection {
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .duration-title {
+            font-size: 22px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .duration-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        .duration-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 3px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            position: relative;
+        }
+        .duration-option:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+            transform: scale(1.05);
+        }
+        .duration-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        .duration-option input[type="radio"]:checked + .duration-content {
+            color: #ffd700;
+        }
+        .duration-option input[type="radio"]:checked ~ .duration-content {
+            color: #ffd700;
+        }
+        .duration-option.selected {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+        .duration-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffd700;
+        }
+        .duration-label {
+            font-size: 14px;
+            color: #ff8c00;
+            font-weight: 600;
+        }
+        .duration-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            margin-top: 5px;
+        }
+        .challenge-selection {
+            margin: 30px 0;
+            text-align: left;
+        }
+        .selection-title {
+            font-size: 22px;
+            color: #ffd700;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .challenge-category {
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+        .category-title {
+            font-size: 18px;
+            color: #ff8c00;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .challenge-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+        .challenge-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        .challenge-option:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+            transform: scale(1.02);
+        }
+        .challenge-option input[type="radio"] {
+            margin: 0;
+            accent-color: #ffd700;
+            transform: scale(1.2);
+        }
+        .challenge-option input[type="radio"]:checked + .option-text {
+            color: #ffd700;
+            font-weight: 600;
+        }
+        .challenge-option.custom-option {
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .option-text {
+            color: #fff;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .custom-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 16px;
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            font-family: inherit;
+            margin-top: 15px;
+        }
+        .custom-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        /* Icon Selection in Welcome */
+        .icon-selection-section {
+            margin: 30px 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .selected-icon-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .selected-icon {
+            font-size: 60px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 4px solid rgba(255, 215, 0, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .change-icon-btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            color: #ffd700;
+            padding: 15px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .change-icon-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.6);
+            transform: scale(1.05);
+        }
+        @keyframes welcomeSlide {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .start-btn {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #1a0a2e;
+            border: none;
+            padding: 18px 50px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.5);
+        }
+        /* Animated Background Pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 50%, rgba(255, 215, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 140, 0, 0.15) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @keyframes bgShift {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, 20px) scale(1.05); }
+        }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* Header with Animated Logo */
+        .header {
+            text-align: center;
+            padding: 35px 25px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 25px;
+            margin-bottom: 35px;
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.2);
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+        .app-logo {
+            animation: omGlow 4s ease-in-out infinite, omFloat 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8));
+        }
+        .om-symbol {
+            font-size: 65px;
+            animation: omGlow 4s ease-in-out infinite, omFloat 6s ease-in-out infinite;
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8));
+        }
+        @keyframes omGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 50px rgba(255, 140, 0, 0.4));
+                transform: scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 35px rgba(255, 215, 0, 1)) drop-shadow(0 0 70px rgba(255, 140, 0, 0.8));
+                transform: scale(1.05);
+            }
+        }
+        @keyframes omFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            25% { transform: translateY(-8px) scale(1.02); }
+            50% { transform: translateY(0px) scale(1.05); }
+            75% { transform: translateY(-5px) scale(1.02); }
+        }
+        .app-title {
+            font-size: 60px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ffd700, #ff8c00, #ffd700);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+            letter-spacing: 10px;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .subtitle {
+            font-size: 22px;
+            color: #ffd700;
+            margin-top: 15px;
+            letter-spacing: 4px;
+        }
+        .user-greeting {
+            font-size: 20px;
+            color: #ff8c00;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+        /* Stats Dashboard */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        .stat-card {
+            background: rgba(255, 215, 0, 0.1);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #ffd700, #ff8c00, #ffd700);
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .stat-card:hover::before {
+            opacity: 0.4;
+        }
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.3);
+        }
+        .stat-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        .stat-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 16px;
+            color: #ffb347;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        /* Mantra Section */
+        .mantra-section {
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(255, 140, 0, 0.4);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 35px;
+            text-align: center;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+        .mantra-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+            animation: mantraGlow 4s ease-in-out infinite;
+        }
+        @keyframes mantraGlow {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(15px, 15px); }
+        }
+        .mantra-label {
+            font-size: 18px;
+            color: #ff8c00;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .mantra-text {
+            font-size: 28px;
+            color: #ffd700;
+            font-weight: 600;
+            line-height: 1.6;
+            animation: fadeIn 1s ease-in;
+            position: relative;
+            z-index: 1;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Navigation Drawer */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .drawer {
+            position: fixed;
+            top: 0;
+            left: -380px;
+            width: 380px;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 10, 46, 0.98), rgba(61, 30, 109, 0.98));
+            backdrop-filter: blur(25px);
+            border-right: 4px solid #ffd700;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 8px 0 40px rgba(255, 215, 0, 0.3);
+        }
+        .drawer.active {
+            left: 0;
+        }
+        .drawer-header {
+            padding: 35px 25px;
+            border-bottom: 3px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+        .drawer-title {
+            font-size: 28px;
+            color: #ffd700;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .drawer-subtitle {
+            font-size: 16px;
+            color: #ff8c00;
+            letter-spacing: 2px;
+        }
+        .drawer-menu {
+            padding: 25px 0;
+        }
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px 30px;
+            color: #ffd700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+            font-weight: 500;
+            font-size: 17px;
+        }
+        .drawer-item:hover {
+            background: rgba(255, 215, 0, 0.15);
+            border-left-color: #ffd700;
+            transform: translateX(8px);
+        }
+        .drawer-item.active {
+            background: rgba(255, 215, 0, 0.25);
+            border-left-color: #ffd700;
+            color: #fff;
+        }
+        .drawer-item-icon {
+            font-size: 22px;
+            width: 30px;
+            text-align: center;
+        }
+        .drawer-item-text {
+            font-size: 17px;
+        }
+        .drawer-close {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            color: #ffd700;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+        .drawer-close:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.1);
+        }
+        /* Menu Button */
+        .menu-btn {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #1a0a2e;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 998;
+            transition: all 0.3s ease;
+            font-size: 22px;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+        .menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
+        }
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+        .toggle-btn {
+            padding: 15px 35px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 30px;
+            color: #ffd700;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toggle-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: scale(1.05);
+        }
+        .toggle-btn.active {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #1a0a2e;
+            border-color: #ffd700;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+        /* List View */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        .day-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .day-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: rgba(100, 100, 100, 0.2);
+        }
+        .day-card.locked::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            content: '\f023';
+            font-size: 22px;
+            color: #888;
+        }
+        .day-card:not(.locked):hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
+        }
+        .day-card.completed {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+        .day-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .day-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #1a0a2e;
+            font-weight: bold;
+        }
+        .checkbox-container {
+            position: relative;
+            width: 35px;
+            height: 35px;
+        }
+        .custom-checkbox {
+            width: 35px;
+            height: 35px;
+            border: 4px solid #ffd700;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .custom-checkbox:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .custom-checkbox.checked {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            animation: checkPulse 0.5s ease;
+        }
+        @keyframes checkPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .checkmark {
+            display: none;
+            color: #1a0a2e;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .custom-checkbox.checked .checkmark {
+            display: block;
+        }
+        .day-info {
+            flex: 1;
+        }
+        .day-label {
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 8px;
+        }
+        .day-date {
+            font-size: 16px;
+            color: #ff8c00;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .day-mantra {
+            font-size: 20px;
+            color: #ffd700;
+            font-weight: 600;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+        .day-status {
+            font-size: 14px;
+            color: #ff8c00;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .day-description {
+            font-size: 16px;
+            color: #ccc;
+            line-height: 1.4;
+        }
+        /* Calendar View */
+        .calendar-view {
+            display: none;
+            background: rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            overflow-x: auto;
+        }
+        .calendar-view.active {
+            display: block;
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .nav-btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            color: #ffd700;
+            padding: 10px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .nav-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+        .calendar-month {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffd700;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+        }
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .weekday {
+            text-align: center;
+            font-weight: 600;
+            color: #ff8c00;
+            padding: 8px 4px;
+            font-size: 14px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            min-width: 280px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px;
+            position: relative;
+            min-height: 35px;
+        }
+        .calendar-day.other-month {
+            opacity: 0.3;
+            cursor: default;
+        }
+        .calendar-day.challenge-day {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.15);
+        }
+        .calendar-day.challenge-day.completed {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(255, 140, 0, 0.4));
+            border-color: #ffd700;
+            animation: calendarPulse 2s ease-in-out infinite;
+        }
+        .calendar-day.today {
+            border-color: #ff8c00;
+            box-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+        }
+        @keyframes calendarPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
+        }
+        .calendar-day:not(.other-month):hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+        .calendar-day-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffd700;
+            margin-bottom: 4px;
+        }
+        .calendar-day-indicator {
+            font-size: 14px;
+            margin-top: 4px;
+            line-height: 1;
+            filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8));
+        }
+        .calendar-checkmark {
+            font-size: 20px;
+            color: #ffd700;
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+        .calendar-cross {
+            font-size: 18px;
+            color: #ff4444;
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            filter: drop-shadow(0 0 5px rgba(255, 68, 68, 0.8));
+        }
+        /* Progress Bar */
+        .progress-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            padding: 30px;
+            margin-top: 35px;
+            backdrop-filter: blur(15px);
+        }
+        .progress-label {
+            font-size: 20px;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            background-size: 200% 100%;
+            animation: progressShine 2s linear infinite;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: #1a0a2e;
+            font-weight: 700;
+            font-size: 16px;
+        }
+        @keyframes progressShine {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+        /* Icon Selection Modal */
+        .icon-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            backdrop-filter: blur(15px);
+        }
+        .icon-modal-content {
+            background: linear-gradient(135deg, rgba(26, 10, 46, 0.98), rgba(61, 30, 109, 0.98));
+            border: 4px solid #ffd700;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            width: 95%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(255, 215, 0, 0.4);
+        }
+        .icon-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+        }
+        .icon-modal-header h3 {
+            font-size: 24px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon-close-btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid #ffd700;
+            color: #ffd700;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        .icon-close-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.1);
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .icon-option {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 32px;
+            position: relative;
+        }
+        .icon-option:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: scale(1.05);
+        }
+        .icon-option.selected {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .icon-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ffd700;
+            color: #1a0a2e;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .icon-confirm-btn {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #1a0a2e;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+        .icon-confirm-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+        .icon-confirm-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        /* Share Modal */
+        .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(15px);
+        }
+        .share-content {
+            background: linear-gradient(135deg, rgba(26, 10, 46, 0.98), rgba(61, 30, 109, 0.98));
+            border: 4px solid #ffd700;
+            border-radius: 30px;
+            padding: 40px;
+            text-align: center;
+            max-width: 700px;
+            width: 95%;
+            max-height: 90%;
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(255, 215, 0, 0.4);
+        }
+        .share-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .share-app-logo {
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+        .share-app-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        .share-user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+        .share-user-icon {
+            font-size: 40px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid rgba(255, 215, 0, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .share-user-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: #ffd700;
+        }
+        .social-share-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 25px;
+            border: 3px solid;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .social-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .whatsapp-btn {
+            background: linear-gradient(45deg, #25D366, #128C7E);
+            border-color: #25D366;
+            color: white;
+        }
+        .whatsapp-btn:hover {
+            background: linear-gradient(45deg, #128C7E, #25D366);
+        }
+        .facebook-btn {
+            background: linear-gradient(45deg, #1877F2, #42A5F5);
+            border-color: #1877F2;
+            color: white;
+        }
+        .facebook-btn:hover {
+            background: linear-gradient(45deg, #42A5F5, #1877F2);
+        }
+        .twitter-btn {
+            background: linear-gradient(45deg, #1DA1F2, #0D8BD9);
+            border-color: #1DA1F2;
+            color: white;
+        }
+        .twitter-btn:hover {
+            background: linear-gradient(45deg, #0D8BD9, #1DA1F2);
+        }
+        .instagram-btn {
+            background: linear-gradient(45deg, #E4405F, #F56040, #FFDC80);
+            border-color: #E4405F;
+            color: white;
+        }
+        .instagram-btn:hover {
+            background: linear-gradient(45deg, #FFDC80, #F56040, #E4405F);
+        }
+        .telegram-btn {
+            background: linear-gradient(45deg, #0088CC, #229ED9);
+            border-color: #0088CC;
+            color: white;
+        }
+        .telegram-btn:hover {
+            background: linear-gradient(45deg, #229ED9, #0088CC);
+        }
+        .linkedin-btn {
+            background: linear-gradient(45deg, #0077B5, #00A0DC);
+            border-color: #0077B5;
+            color: white;
+        }
+        .linkedin-btn:hover {
+            background: linear-gradient(45deg, #00A0DC, #0077B5);
+        }
+        .share-image {
+            width: 100%;
+            max-width: 450px;
+            height: 350px;
+            background: linear-gradient(135deg, #1a0a2e, #3d1e6d, #8b3a62);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            border: 3px solid #ffd700;
+            position: relative;
+            overflow: hidden;
+        }
+        .share-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-image);
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+        }
+        .share-stats {
+            position: relative;
+            z-index: 1;
+            color: #ffd700;
+        }
+        .share-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .share-progress {
+            font-size: 52px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        .share-subtitle {
+            font-size: 18px;
+            color: #ff8c00;
+        }
+        .close-btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 3px solid #ffd700;
+            color: #ffd700;
+            padding: 15px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .close-btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+        /* Floating Particles */
+        .particle {
+            position: fixed;
+            width: 5px;
+            height: 5px;
+            background: #ffd700;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 12s linear infinite;
+            opacity: 0.7;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(100%) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100%) translateX(120px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app-title {
+                font-size: 42px;
+                letter-spacing: 6px;
+            }
+            .om-symbol {
+                font-size: 45px;
+            }
+            .days-grid {
+                grid-template-columns: 1fr;
+            }
+            .calendar-view {
+                padding: 15px;
+            }
+            .calendar-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .calendar-month {
+                font-size: 20px;
+                min-width: auto;
+            }
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+                min-width: 250px;
+            }
+            .calendar-day {
+                min-height: 30px;
+                border-radius: 8px;
+                padding: 2px;
+            }
+            .calendar-day-number {
+                font-size: 14px;
+            }
+            .calendar-day-indicator {
+                font-size: 10px;
+            }
+            .weekday {
+                font-size: 12px;
+                padding: 6px 2px;
+            }
+            .nav-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+            .stat-value {
+                font-size: 36px;
+            }
+            .welcome-content {
+                padding: 25px 20px;
+                max-height: 95%;
+                overflow-y: auto;
+            }
+            .welcome-title {
+                font-size: 28px;
+            }
+            .selected-icon {
+                font-size: 45px;
+                width: 80px;
+                height: 80px;
+            }
+            .duration-options {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .challenge-options {
+                grid-template-columns: 1fr;
+            }
+            .icon-grid {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                gap: 10px;
+            }
+            .icon-option {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            .share-content {
+                padding: 25px 20px;
+                max-height: 95%;
+            }
+            .share-user-icon {
+                font-size: 30px;
+                width: 50px;
+                height: 50px;
+            }
+            .share-user-name {
+                font-size: 18px;
+            }
+            .social-share-buttons {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .social-btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+        @media (max-width: 480px) {
+            .calendar-grid {
+                min-width: 220px;
+                gap: 2px;
+            }
+            .calendar-day {
+                min-height: 25px;
+                font-size: 12px;
+            }
+            .calendar-day-number {
+                font-size: 12px;
+            }
+            .weekday {
+                font-size: 10px;
+                padding: 4px 1px;
+            }
+            .duration-options {
+                grid-template-columns: 1fr;
+            }
+            .selected-icon-display {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #ffd700;
+            font-size: 20px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 45px;
+            height: 45px;
+            border: 5px solid rgba(255, 215, 0, 0.3);
+            border-top-color: #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none !important;
+        }
+        /* Level System Styles */
+        .level-card {
+            position: relative;
+            overflow: visible;
+        }
+        .level-badge {
+            font-size: 48px !important;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        .level-badge:hover {
+            transform: scale(1.2) rotate(10deg);
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+            animation: badgeGlow 0.5s ease-in-out;
+        }
+        @keyframes badgeGlow {
+            0%, 100% { transform: scale(1.2) rotate(10deg); }
+            50% { transform: scale(1.3) rotate(-5deg); }
+        }
+        .level-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        .level-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+            background-size: 200% 100%;
+            animation: levelProgressShine 2s linear infinite;
+            transition: width 0.5s ease;
+            border-radius: 8px;
+        }
+        @keyframes levelProgressShine {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+        /* Full Screen Animations */
+        .fullscreen-celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 10, 46, 0.95), rgba(61, 30, 109, 0.95));
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(20px);
+            animation: celebrationAppear 0.8s ease-out;
+        }
+        @keyframes celebrationAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .celebration-content {
+            text-align: center;
+            max-width: 600px;
+            padding: 40px;
+        }
+        .celebration-emoji {
+            font-size: 120px;
+            margin-bottom: 30px;
+            animation: celebrationBounce 2s ease-in-out infinite;
+        }
+        @keyframes celebrationBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-30px) scale(1.1); }
+            60% { transform: translateY(-15px) scale(1.05); }
+        }
+        .celebration-title {
+            font-size: 48px;
+            color: #ffd700;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            animation: titleGlow 2s ease-in-out infinite;
+        }
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+            50% { text-shadow: 0 0 50px rgba(255, 215, 0, 1), 0 0 80px rgba(255, 140, 0, 0.8); }
+        }
+        .celebration-message {
+            font-size: 24px;
+            color: #ff8c00;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .fireworks {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .firework {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: fireworkExplode 2s ease-out infinite;
+        }
+        @keyframes fireworkExplode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+        /* Challenge Complete Animation */
+        .challenge-complete-celebration {
+            background: linear-gradient(135deg,
+                rgba(255, 215, 0, 0.2),
+                rgba(255, 140, 0, 0.2),
+                rgba(139, 58, 98, 0.2)
+            );
+            animation: challengeCompleteGlow 3s ease-in-out infinite;
+        }
+        @keyframes challengeCompleteGlow {
+            0%, 100% {
+                background: linear-gradient(135deg,
+                    rgba(255, 215, 0, 0.2),
+                    rgba(255, 140, 0, 0.2),
+                    rgba(139, 58, 98, 0.2)
+                );
+            }
+            50% {
+                background: linear-gradient(135deg,
+                    rgba(255, 215, 0, 0.4),
+                    rgba(255, 140, 0, 0.4),
+                    rgba(139, 58, 98, 0.4)
+                );
+            }
+        }
+        .extend-challenge-btn {
+            background: linear-gradient(45deg, #ffd700, #ff8c00);
+            color: #1a0a2e;
+            border: none;
+            padding: 20px 40px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: extendButtonPulse 2s ease-in-out infinite;
+        }
+        @keyframes extendButtonPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 215, 0, 0.8); }
+        }
+        .extend-challenge-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(255, 215, 0, 0.6);
+        }
+        /* Level Up Animation */
+        .level-up-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2500;
+            text-align: center;
+            animation: levelUpAppear 2s ease-out forwards;
+        }
+        @keyframes levelUpAppear {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        .level-up-text {
+            font-size: 48px;
+            color: #ffd700;
+            font-weight: 700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 1);
+            margin-bottom: 20px;
+        }
+        .level-up-badge {
+            font-size: 80px;
+            animation: levelUpBadgeSpin 2s ease-out;
+        }
+        @keyframes levelUpBadgeSpin {
+            0% { transform: rotate(0deg) scale(0.5); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        @keyframes blessingAppear {
+            from {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+        /* Export Button Styles */
+        .export-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px;
+        }
+        .export-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="bg-pattern"></div><!-- Menu Button --> <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button> <!-- Navigation Drawer -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="drawer"><button class="drawer-close" id="drawerClose"><i class="fas fa-times"></i></button>
+   <div class="drawer-header">
+    <div class="drawer-title">
+     SANKALP
+    </div>
+    <div class="drawer-subtitle">
+     Navigation Menu
+    </div>
+   </div>
+   <div class="drawer-menu">
+    <div class="drawer-item active" data-view="dashboard">
+     <div class="drawer-item-icon">
+      <i class="fas fa-home"></i>
+     </div>
+     <div class="drawer-item-text">
+      Dashboard
+     </div>
+    </div>
+    <div class="drawer-item" data-view="list">
+     <div class="drawer-item-icon">
+      <i class="fas fa-list"></i>
+     </div>
+     <div class="drawer-item-text">
+      Day List
+     </div>
+    </div>
+    <div class="drawer-item" data-view="calendar">
+     <div class="drawer-item-icon">
+      <i class="fas fa-calendar-alt"></i>
+     </div>
+     <div class="drawer-item-text">
+      Full Calendar
+     </div>
+    </div>
+    <div class="drawer-item" data-view="progress">
+     <div class="drawer-item-icon">
+      <i class="fas fa-chart-line"></i>
+     </div>
+     <div class="drawer-item-text">
+      Progress Stats
+     </div>
+    </div>
+    <div class="drawer-item" data-view="mantras">
+     <div class="drawer-item-icon">
+      <i class="fas fa-om"></i>
+     </div>
+     <div class="drawer-item-text">
+      Daily Mantras
+     </div>
+    </div>
+    <div class="drawer-item" data-view="share">
+     <div class="drawer-item-icon">
+      <i class="fas fa-share-alt"></i>
+     </div>
+     <div class="drawer-item-text">
+      Share Progress
+     </div>
+    </div>
+    <div class="drawer-item" data-view="export">
+     <div class="drawer-item-icon">
+      <i class="fas fa-download"></i>
+     </div>
+     <div class="drawer-item-text">
+      Export Data (CSV)
+     </div>
+    </div>
+    <div class="drawer-item" data-view="help">
+     <div class="drawer-item-icon">
+      <i class="fab fa-telegram"></i>
+     </div>
+     <div class="drawer-item-text">
+      Helpful Channel
+     </div>
+    </div>
+    <div class="drawer-item" data-view="youtube">
+     <div class="drawer-item-icon">
+      <i class="fab fa-youtube"></i>
+     </div>
+     <div class="drawer-item-text">
+      YouTube Playlist
+     </div>
+    </div>
+    <div class="drawer-item" data-view="webshare">
+     <div class="drawer-item-icon">
+      <i class="fas fa-globe"></i>
+     </div>
+     <div class="drawer-item-text">
+      Share Website
+     </div>
+    </div>
+    <div class="drawer-item" data-view="query">
+     <div class="drawer-item-icon">
+      <i class="fas fa-question-circle"></i>
+     </div>
+     <div class="drawer-item-text">
+      Any Query
+     </div>
+    </div>
+    <div class="drawer-item" data-view="reset">
+     <div class="drawer-item-icon">
+      <i class="fas fa-redo-alt"></i>
+     </div>
+     <div class="drawer-item-text">
+      Reset Challenge
+     </div>
+    </div>
+   </div>
+  </div><!-- Welcome Modal -->
+  <div class="welcome-modal" id="welcomeModal">
+   <div class="welcome-content">
+    <div class="welcome-logo">
+     <svg width="90" height="90" viewbox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="url(#logoGradient)" stroke="#ffd700" stroke-width="4" /> <text x="50" y="60" text-anchor="middle" fill="#1a0a2e" font-size="32" font-weight="bold" font-family="serif">
+       ॐ
+      </text> <defs>
+       <lineargradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+       </lineargradient>
+      </defs>
+     </svg>
+    </div>
+    <h2 class="welcome-title" id="welcomeMessage">Welcome to SANKALP</h2>
+    <p class="welcome-subtitle">Transform your life through mindful practice and dedication</p><input type="text" class="name-input" id="nameInput" placeholder="Enter your name" maxlength="50"> <!-- Icon Selection -->
+    <div class="icon-selection-section">
+     <h3 class="selection-title"><i class="fas fa-user-circle"></i> Choose Your Profile Icon:</h3>
+     <div class="selected-icon-display" id="selectedIconDisplay">
+      <div class="selected-icon" id="selectedIcon">
+       👤
+      </div><button class="change-icon-btn" id="changeIconBtn"> <i class="fas fa-edit"></i> Change Icon </button>
+     </div>
+    </div><!-- Duration Selection -->
+    <div class="duration-selection">
+     <h3 class="duration-title"><i class="fas fa-clock"></i> Choose Challenge Duration:</h3>
+     <div class="duration-options"><label class="duration-option"> <input type="radio" name="challengeDuration" value="21">
+       <div class="duration-content">
+        <div class="duration-number">
+         21
+        </div>
+        <div class="duration-label">
+         Days
+        </div>
+        <div class="duration-desc">
+         Quick Start
+        </div>
+       </div></label> <label class="duration-option"> <input type="radio" name="challengeDuration" value="45">
+       <div class="duration-content">
+        <div class="duration-number">
+         45
+        </div>
+        <div class="duration-label">
+         Days
+        </div>
+        <div class="duration-desc">
+         Foundation
+        </div>
+       </div></label> <label class="duration-option"> <input type="radio" name="challengeDuration" value="90" checked>
+       <div class="duration-content">
+        <div class="duration-number">
+         90
+        </div>
+        <div class="duration-label">
+         Days
+        </div>
+        <div class="duration-desc">
+         Transformation
+        </div>
+       </div></label> <label class="duration-option"> <input type="radio" name="challengeDuration" value="180">
+       <div class="duration-content">
+        <div class="duration-number">
+         180
+        </div>
+        <div class="duration-label">
+         Days
+        </div>
+        <div class="duration-desc">
+         Mastery
+        </div>
+       </div></label> <label class="duration-option"> <input type="radio" name="challengeDuration" value="365">
+       <div class="duration-content">
+        <div class="duration-number">
+         365
+        </div>
+        <div class="duration-label">
+         Days
+        </div>
+        <div class="duration-desc">
+         Life Change
+        </div>
+       </div></label>
+     </div>
+    </div><!-- Challenge Type Selection -->
+    <div class="challenge-selection">
+     <h3 class="selection-title"><i class="fas fa-target"></i> Choose Your Challenge:</h3>
+     <div class="challenge-category">
+      <h4 class="category-title"><i class="fas fa-ban"></i> Break Bad Habits</h4>
+      <div class="challenge-options"><label class="challenge-option"> <input type="radio" name="challengeType" value="mobile_addiction"> <span class="option-text"><i class="fas fa-mobile-alt"></i> Mobile Addiction</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="social_media"> <span class="option-text"><i class="fab fa-instagram"></i> Social Media/Reels</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="smoking"> <span class="option-text"><i class="fas fa-smoking-ban"></i> Smoking</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="junk_food"> <span class="option-text"><i class="fas fa-hamburger"></i> Junk Food</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="procrastination"> <span class="option-text"><i class="fas fa-clock"></i> Procrastination</span> </label>
+      </div>
+     </div>
+     <div class="challenge-category">
+      <h4 class="category-title"><i class="fas fa-plus-circle"></i> Build Good Habits</h4>
+      <div class="challenge-options"><label class="challenge-option"> <input type="radio" name="challengeType" value="exercise"> <span class="option-text"><i class="fas fa-dumbbell"></i> Daily Exercise</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="meditation"> <span class="option-text"><i class="fas fa-om"></i> Meditation</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="reading"> <span class="option-text"><i class="fas fa-book"></i> Daily Reading</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="singing"> <span class="option-text"><i class="fas fa-music"></i> Singing Practice</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="early_wake"> <span class="option-text"><i class="fas fa-sun"></i> Early Wake Up</span> </label> <label class="challenge-option"> <input type="radio" name="challengeType" value="water_intake"> <span class="option-text"><i class="fas fa-tint"></i> Proper Hydration</span> </label>
+      </div>
+     </div>
+     <div class="challenge-category"><label class="challenge-option custom-option"> <input type="radio" name="challengeType" value="custom"> <span class="option-text"><i class="fas fa-edit"></i> Other (Custom)</span> </label> <input type="text" class="custom-input" id="customChallenge" placeholder="Enter your custom challenge" style="display: none;">
+     </div>
+    </div><button class="start-btn" id="startBtn"> <i class="fas fa-rocket"></i> Start My Journey </button>
+   </div>
+  </div><!-- Icon Selection Modal -->
+  <div class="icon-modal" id="iconModal">
+   <div class="icon-modal-content">
+    <div class="icon-modal-header">
+     <h3><i class="fas fa-palette"></i> Choose Your Profile Icon</h3><button class="icon-close-btn" id="iconCloseBtn"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="icon-grid" id="iconGrid"><!-- Icons will be populated by JavaScript -->
+    </div><button class="icon-confirm-btn" id="iconConfirmBtn"> <i class="fas fa-check"></i> Confirm Selection </button>
+   </div>
+  </div><!-- Reset Confirmation Modal -->
+  <div class="share-modal" id="resetModal">
+   <div class="share-content">
+    <div style="text-align: center; padding: 20px;">
+     <div style="font-size: 60px; margin-bottom: 20px;">
+      ⚠️
+     </div>
+     <h3 style="color: #ffd700; font-size: 28px; margin-bottom: 20px;">Reset Challenge?</h3>
+     <p style="color: #ff8c00; font-size: 18px; margin-bottom: 30px; line-height: 1.6;">यह आपकी सारी प्रगति को मिटा देगा और आप फिर से Day 1 से शुरू करेंगे।<br>
+       क्या आप वाकई अपनी चुनौती को रीसेट करना चाहते हैं?</p>
+     <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;"><button id="confirmResetBtn" style="background: linear-gradient(45deg, #ff4444, #cc0000); color: white; border: none; padding: 15px 30px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 16px; display: flex; align-items: center; gap: 10px;"> <i class="fas fa-check"></i> हाँ, रीसेट करें </button> <button id="cancelResetBtn" style="background: rgba(255, 215, 0, 0.2); border: 3px solid #ffd700; color: #ffd700; padding: 15px 30px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 16px; display: flex; align-items: center; gap: 10px;"> <i class="fas fa-times"></i> रद्द करें </button>
+     </div>
+    </div>
+   </div>
+  </div><!-- Share Modal -->
+  <div class="share-modal" id="shareModal">
+   <div class="share-content">
+    <div class="share-image" id="shareImage">
+     <div class="share-stats">
+      <div class="share-header">
+       <div class="share-app-logo">
+        <svg width="50" height="50" viewbox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="url(#shareLogoGradient)" stroke="#ffd700" stroke-width="4" /> <text x="50" y="60" text-anchor="middle" fill="#1a0a2e" font-size="24" font-weight="bold" font-family="serif">
+          ॐ
+         </text> <defs>
+          <lineargradient id="shareLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+           <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+           <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+          </lineargradient>
+         </defs>
+        </svg>
+       </div>
+       <div class="share-app-name">
+        SANKALP
+       </div>
+      </div>
+      <div class="share-user-info">
+       <div class="share-user-icon" id="shareUserIcon">
+        👤
+       </div>
+       <div class="share-user-name" id="shareUserName">
+        User
+       </div>
+      </div>
+      <div class="share-progress" id="shareProgress">
+       Day 1
+      </div>
+      <div class="share-subtitle" id="shareSubtitle">
+       Journey Completed!
+      </div>
+     </div>
+    </div>
+    <div class="social-share-buttons"><a href="#" class="social-btn whatsapp-btn" id="whatsappShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-whatsapp"></i> WhatsApp </a> <a href="#" class="social-btn facebook-btn" id="facebookShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-facebook"></i> Facebook </a> <a href="#" class="social-btn twitter-btn" id="twitterShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-twitter"></i> Twitter </a> <a href="#" class="social-btn instagram-btn" id="instagramShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-instagram"></i> Instagram </a> <a href="#" class="social-btn telegram-btn" id="telegramShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-telegram"></i> Telegram </a> <a href="#" class="social-btn linkedin-btn" id="linkedinShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-linkedin"></i> LinkedIn </a>
+    </div><button class="close-btn" id="closeShareBtn"><i class="fas fa-times"></i> Close</button>
+   </div>
+  </div><!-- Web Share Modal -->
+  <div class="share-modal" id="webshareModal">
+   <div class="share-content">
+    <div class="share-image" id="webshareImage">
+     <div class="share-stats">
+      <div class="share-header">
+       <div class="share-app-logo">
+        <svg width="50" height="50" viewbox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="url(#webshareLogoGradient)" stroke="#ffd700" stroke-width="4" /> <text x="50" y="60" text-anchor="middle" fill="#1a0a2e" font-size="24" font-weight="bold" font-family="serif">
+          ॐ
+         </text> <defs>
+          <lineargradient id="webshareLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+           <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+           <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+          </lineargradient>
+         </defs>
+        </svg>
+       </div>
+       <div class="share-app-name">
+        SANKALP
+       </div>
+      </div>
+      <div class="share-progress" id="webshareProgress">
+       Join Now!
+      </div>
+      <div class="share-subtitle" id="webshareSubtitle">
+       Transform Your Life
+      </div>
+     </div>
+    </div>
+    <div class="social-share-buttons"><a href="#" class="social-btn whatsapp-btn" id="webWhatsappShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-whatsapp"></i> WhatsApp </a> <a href="#" class="social-btn facebook-btn" id="webFacebookShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-facebook"></i> Facebook </a> <a href="#" class="social-btn twitter-btn" id="webTwitterShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-twitter"></i> Twitter </a> <a href="#" class="social-btn instagram-btn" id="webInstagramShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-instagram"></i> Instagram </a> <a href="#" class="social-btn telegram-btn" id="webTelegramShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-telegram"></i> Telegram </a> <a href="#" class="social-btn linkedin-btn" id="webLinkedinShare" target="_blank" rel="noopener noreferrer"> <i class="fab fa-linkedin"></i> LinkedIn </a>
+    </div><button class="close-btn" id="closeWebshareBtn"><i class="fas fa-times"></i> Close</button>
+   </div>
+  </div>
+  <div class="container"><!-- Header -->
+   <div class="header">
+    <div class="logo-container">
+     <svg class="app-logo" width="65" height="65" viewbox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="url(#headerLogoGradient)" stroke="#ffd700" stroke-width="4" /> <text x="50" y="60" text-anchor="middle" fill="#1a0a2e" font-size="28" font-weight="bold" font-family="serif">
+       ॐ
+      </text> <defs>
+       <lineargradient id="headerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+       </lineargradient>
+      </defs>
+     </svg>
+     <h1 class="app-title" id="appTitle">SANKALP</h1>
+     <svg class="app-logo" width="65" height="65" viewbox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="url(#headerLogoGradient2)" stroke="#ffd700" stroke-width="4" /> <text x="50" y="60" text-anchor="middle" fill="#1a0a2e" font-size="28" font-weight="bold" font-family="serif">
+       ॐ
+      </text> <defs>
+       <lineargradient id="headerLogoGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#ffd700;stop-opacity:1" />
+        <stop offset="100%" style="stop-color:#ff8c00;stop-opacity:1" />
+       </lineargradient>
+      </defs>
+     </svg>
+    </div>
+    <p class="subtitle" id="challengeSubtitle">Vedic Challenge</p>
+    <p class="user-greeting" id="userGreeting"></p>
+   </div><!-- Stats Dashboard -->
+   <div class="stats-container">
+    <div class="stat-card">
+     <div class="stat-icon">
+      <i class="fas fa-check-circle"></i>
+     </div>
+     <div class="stat-value" id="completedDays">
+      0
+     </div>
+     <div class="stat-label">
+      Days Completed
+     </div>
+    </div>
+    <div class="stat-card">
+     <div class="stat-icon">
+      <i class="fas fa-hourglass-half"></i>
+     </div>
+     <div class="stat-value" id="remainingDays">
+      90
+     </div>
+     <div class="stat-label">
+      Days Remaining
+     </div>
+    </div>
+    <div class="stat-card level-card">
+     <div class="stat-icon level-badge" id="levelBadge">
+      🥉
+     </div>
+     <div class="stat-value" id="levelNumber">
+      1
+     </div>
+     <div class="stat-label">
+      Level
+     </div>
+     <div class="level-progress-bar">
+      <div class="level-progress-fill" id="levelProgressFill"></div>
+     </div>
+    </div>
+    <div class="stat-card">
+     <div class="stat-icon">
+      <i class="fas fa-chart-line"></i>
+     </div>
+     <div class="stat-value" id="progressPercent">
+      0%
+     </div>
+     <div class="stat-label">
+      Progress
+     </div>
+    </div>
+   </div><!-- Mantra Section -->
+   <div class="mantra-section">
+    <div class="mantra-label" id="mantraLabel"><i class="fas fa-om"></i> Today's Mantra
+    </div>
+    <div class="mantra-text" id="mantraText">
+     ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात्
+    </div>
+   </div><!-- View Toggle -->
+   <div class="view-toggle"><button class="toggle-btn active" id="listViewBtn"> <i class="fas fa-list"></i> List View </button> <button class="toggle-btn" id="calendarViewBtn"> <i class="fas fa-calendar-alt"></i> Calendar View </button> <button class="toggle-btn" id="shareBtn"> <i class="fas fa-share-alt"></i> Share Progress </button>
+   </div><!-- List View -->
+   <div id="listView" class="days-grid"></div><!-- Calendar View -->
+   <div id="calendarView" class="calendar-view">
+    <div class="calendar-header"><button class="nav-btn" id="prevMonth"> <i class="fas fa-chevron-left"></i> Previous </button>
+     <div class="calendar-month" id="currentMonth">
+      January 2024
+     </div><button class="nav-btn" id="nextMonth"> Next <i class="fas fa-chevron-right"></i> </button>
+    </div>
+    <div class="calendar-weekdays">
+     <div class="weekday">
+      Sun
+     </div>
+     <div class="weekday">
+      Mon
+     </div>
+     <div class="weekday">
+      Tue
+     </div>
+     <div class="weekday">
+      Wed
+     </div>
+     <div class="weekday">
+      Thu
+     </div>
+     <div class="weekday">
+      Fri
+     </div>
+     <div class="weekday">
+      Sat
+     </div>
+    </div>
+    <div class="calendar-grid" id="calendarGrid"></div>
+   </div><!-- Progress Bar -->
+   <div class="progress-section">
+    <div class="progress-label"><i class="fas fa-trophy"></i> Your Journey Progress
+    </div>
+    <div class="progress-bar-container">
+     <div class="progress-bar" id="progressBar" style="width: 0%;">
+      0%
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+        // Configuration
+        const defaultConfig = {
+            app_title: "SANKALP",
+            challenge_subtitle: "Vedic Challenge",
+            mantra_label: "Today's Mantra",
+            welcome_message: "Welcome to your spiritual journey",
+            primary_color: "#ffd700",
+            secondary_color: "#ff8c00",
+            background_color: "#1a0a2e",
+            text_color: "#ffffff",
+            accent_color: "#8b3a62"
+        };
+        let config = { ...defaultConfig };
+        let allDays = [];
+        let currentUser = null;
+        let startDate = null;
+        let challengeDuration = 90;
+        let currentCalendarDate = new Date();
+        // Sanskrit Mantras
+        const mantras = [
+            "ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात्",
+            "ॐ नमः शिवाय",
+            "ॐ गं गणपतये नमः",
+            "ॐ श्री महालक्ष्म्यै नमः",
+            "ॐ नमो भगवते वासुदेवाय",
+            "ॐ ह्रीं श्रीं क्लीं परमेश्वरि स्वाहा",
+            "ॐ सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः",
+            "ॐ शान्तिः शान्तिः शान्तिः",
+            "ॐ असतो मा सद्गमय तमसो मा ज्योतिर्गमय मृत्योर्मा अमृतं गमय",
+            "ॐ सह नाववतु सह नौ भुनक्तु सह वीर्यं करवावहै"
+        ];
+        let currentMantraIndex = 0;
+        // Vedic Icons and descriptions with Hindi Suvichar for each day
+        const vedicDayData = [
+            { icon: "🕉️", title: "OM Meditation", desc: "Begin with sacred OM chanting", suvichar: "ॐ सर्वे भवन्तु सुखिनः - सभी सुखी हों" },
+            { icon: "🌅", title: "Surya Namaskar", desc: "Sun salutation practice", suvichar: "सूर्य की भांति तेजस्वी बनो" },
+            { icon: "🧘‍♂️", title: "Dhyana", desc: "Deep meditation session", suvichar: "मन की शांति ही सच्चा धन है" },
+            { icon: "📿", title: "Japa Mala", desc: "Mantra repetition with beads", suvichar: "जप से जीवन में जादू आता है" },
+            { icon: "🪷", title: "Lotus Asana", desc: "Sacred yoga postures", suvichar: "कमल की भांति निर्मल रहो" },
+            { icon: "🔥", title: "Agni Hotra", desc: "Fire ceremony ritual", suvichar: "अग्नि सम पवित्र बनो" },
+            { icon: "💧", title: "Ganga Aarti", desc: "Water blessing ceremony", suvichar: "जल सा निर्मल हृदय रखो" },
+            { icon: "🌸", title: "Pushpa Puja", desc: "Flower offering ritual", suvichar: "फूल सा सुगंधित जीवन जियो" },
+            { icon: "🕯️", title: "Deepa Darshan", desc: "Light meditation practice", suvichar: "दीपक सा प्रकाश फैलाओ" },
+            { icon: "🎵", title: "Bhajan Kirtan", desc: "Devotional singing", suvichar: "संगीत से आत्मा को शुद्ध करो" }
+        ];
+        // Generate more vedic data for longer challenges
+        function generateVedicData(totalDays) {
+            const extendedData = [...vedicDayData];
+            while (extendedData.length < totalDays) {
+                extendedData.push(...vedicDayData);
+            }
+            return extendedData.slice(0, totalDays);
+        }
+        // Rotate mantras every 10 seconds
+        setInterval(() => {
+            currentMantraIndex = (currentMantraIndex + 1) % mantras.length;
+            const mantraElement = document.getElementById('mantraText');
+            mantraElement.style.animation = 'none';
+            setTimeout(() => {
+                mantraElement.textContent = mantras[currentMantraIndex];
+                mantraElement.style.animation = 'fadeIn 1s ease-in';
+            }, 50);
+        }, 10000);
+        // Create floating particles
+        function createParticles() {
+            for (let i = 0; i < 25; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 12 + 's';
+                particle.style.animationDuration = (Math.random() * 12 + 12) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+        createParticles();
+        // Local Storage Data Handler (Replaces SDK)
+        const STORAGE_KEY = 'sankalp_challenge_data';
+        function loadData() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    allDays = JSON.parse(stored);
+                    // Find user data
+                    const userData = allDays.find(d => d.userName);
+                    if (userData) {
+                        currentUser = userData.userName;
+                        selectedUserIcon = userData.userIcon || '👤';
+                        startDate = new Date(userData.startDate);
+                        challengeDuration = userData.challengeDuration || 90;
+                     
+                        const greetingElement = document.getElementById('userGreeting');
+                        if (greetingElement) {
+                            greetingElement.textContent = `Namaste, ${currentUser}! 🙏`;
+                        }
+                     
+                        // Update subtitle with challenge info
+                        const subtitleElement = document.getElementById('challengeSubtitle');
+                        if (subtitleElement && userData.challengeName) {
+                            const actionText = userData.challengeType === 'break' ? 'Breaking' :
+                                             userData.challengeType === 'build' ? 'Building' : 'Transforming';
+                            subtitleElement.textContent = `${challengeDuration} Day ${actionText}: ${userData.challengeName}`;
+                        }
+                     
+                        const welcomeModal = document.getElementById('welcomeModal');
+                        if (welcomeModal) {
+                            welcomeModal.style.display = 'none';
+                        }
+                    }
+                    updateUI();
+                } else {
+                    checkUserExists();
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                checkUserExists();
+            }
+        }
+        function saveData() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(allDays));
+            } catch (error) {
+                console.error('Error saving data:', error);
+            }
+        }
+        function createData(data) {
+            allDays.push(data);
+            saveData();
+            updateUI();
+        }
+        async function updateData(updatedData) {
+            const index = allDays.findIndex(d => d.day === updatedData.day);
+            if (index !== -1) {
+                allDays[index] = { ...allDays[index], ...updatedData };
+                saveData();
+                updateUI();
+            }
+        }
+        function deleteData(dayData) {
+            allDays = allDays.filter(d => d.day !== dayData.day);
+            saveData();
+            updateUI();
+        }
+        // Check if user exists
+        function checkUserExists() {
+            const userData = allDays.find(d => d.userName);
+            if (!userData) {
+                document.getElementById('welcomeModal').style.display = 'flex';
+            } else {
+                updateUI();
+            }
+        }
+        // Challenge type data
+        const challengeTypes = {
+            mobile_addiction: { name: "Mobile Addiction", emoji: "📱", type: "break" },
+            social_media: { name: "Social Media/Reels", emoji: "📲", type: "break" },
+            smoking: { name: "Smoking", emoji: "🚬", type: "break" },
+            junk_food: { name: "Junk Food", emoji: "🍟", type: "break" },
+            procrastination: { name: "Procrastination", emoji: "⏰", type: "break" },
+            exercise: { name: "Daily Exercise", emoji: "💪", type: "build" },
+            meditation: { name: "Meditation", emoji: "🧘‍♂️", type: "build" },
+            reading: { name: "Daily Reading", emoji: "📚", type: "build" },
+            singing: { name: "Singing Practice", emoji: "🎵", type: "build" },
+            early_wake: { name: "Early Wake Up", emoji: "🌅", type: "build" },
+            water_intake: { name: "Proper Hydration", emoji: "💧", type: "build" }
+        };
+        let selectedChallenge = null;
+        let selectedUserIcon = '👤';
+        // Available user icons
+        const userIcons = [
+            '👤', '👨', '👩', '🧑', '👦', '👧', '👴', '👵', '🧔', '👨‍💼',
+            '👩‍💼', '👨‍🎓', '👩‍🎓', '👨‍⚕️', '👩‍⚕️', '👨‍🏫', '👩‍🏫', '👨‍💻', '👩‍💻', '🧑‍💻',
+            '🕉️', '🙏', '🧘‍♂️', '🧘‍♀️', '🧘', '🕯️', '📿', '🪷', '🌟', '✨',
+            '🔥', '💫', '🌙', '☀️', '🌅', '🌄', '🏔️', '🌊', '🌳', '🌸',
+            '🦁', '🐅', '🦅', '🐘', '🐄', '🦚', '🐍', '🐢', '🦋', '🐝',
+            '💎', '👑', '🏆', '🎯', '⚡', '🔱', '🗡️', '🛡️', '🎭', '🎨'
+        ];
+        // Initialize icon grid
+        function initializeIconGrid() {
+            const iconGrid = document.getElementById('iconGrid');
+            iconGrid.innerHTML = '';
+         
+            userIcons.forEach(icon => {
+                const iconOption = document.createElement('div');
+                iconOption.className = 'icon-option';
+                iconOption.textContent = icon;
+                iconOption.addEventListener('click', () => selectIcon(icon, iconOption));
+                iconGrid.appendChild(iconOption);
+            });
+        }
+        // Select icon
+        function selectIcon(icon, element) {
+            // Remove previous selection
+            document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
+         
+            // Add selection to clicked icon
+            element.classList.add('selected');
+            selectedUserIcon = icon;
+         
+            // Enable confirm button
+            document.getElementById('iconConfirmBtn').disabled = false;
+        }
+        // Show icon modal
+        function showIconModal() {
+            initializeIconGrid();
+            document.getElementById('iconModal').style.display = 'flex';
+         
+            // Pre-select current icon
+            const currentIconElement = Array.from(document.querySelectorAll('.icon-option'))
+                .find(opt => opt.textContent === selectedUserIcon);
+            if (currentIconElement) {
+                selectIcon(selectedUserIcon, currentIconElement);
+            }
+        }
+        // Hide icon modal
+        function hideIconModal() {
+            document.getElementById('iconModal').style.display = 'none';
+        }
+        // Confirm icon selection
+        function confirmIconSelection() {
+            document.getElementById('selectedIcon').textContent = selectedUserIcon;
+            hideIconModal();
+        }
+        // Handle duration selection
+        document.addEventListener('change', (e) => {
+            if (e.target.name === 'challengeDuration') {
+                challengeDuration = parseInt(e.target.value);
+                // Update visual selection
+                document.querySelectorAll('.duration-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                e.target.closest('.duration-option').classList.add('selected');
+            }
+         
+            if (e.target.name === 'challengeType') {
+                const customInput = document.getElementById('customChallenge');
+                if (e.target.value === 'custom') {
+                    customInput.style.display = 'block';
+                    customInput.focus();
+                } else {
+                    customInput.style.display = 'none';
+                    selectedChallenge = challengeTypes[e.target.value];
+                }
+            }
+        });
+        // Icon modal event listeners
+        document.getElementById('changeIconBtn').addEventListener('click', showIconModal);
+        document.getElementById('iconCloseBtn').addEventListener('click', hideIconModal);
+        document.getElementById('iconConfirmBtn').addEventListener('click', confirmIconSelection);
+        // Start journey
+        document.getElementById('startBtn').addEventListener('click', async () => {
+            const nameInput = document.getElementById('nameInput');
+            const userName = nameInput.value.trim();
+            const selectedRadio = document.querySelector('input[name="challengeType"]:checked');
+            const selectedDurationRadio = document.querySelector('input[name="challengeDuration"]:checked');
+            const customInput = document.getElementById('customChallenge');
+         
+            if (!userName) {
+                nameInput.style.borderColor = '#ff4444';
+                nameInput.placeholder = 'Please enter your name';
+                return;
+            }
+            if (!selectedRadio) {
+                showCustomAlert('Please select a challenge type! 🎯');
+                return;
+            }
+            if (!selectedDurationRadio) {
+                showCustomAlert('Please select challenge duration! ⏰');
+                return;
+            }
+            challengeDuration = parseInt(selectedDurationRadio.value);
+            // Handle challenge selection
+            if (selectedRadio.value === 'custom') {
+                const customChallenge = customInput.value.trim();
+                if (!customChallenge) {
+                    customInput.style.borderColor = '#ff4444';
+                    customInput.placeholder = 'Please enter your custom challenge';
+                    return;
+                }
+                selectedChallenge = {
+                    name: customChallenge,
+                    emoji: "🎯",
+                    type: "custom"
+                };
+            } else {
+                selectedChallenge = challengeTypes[selectedRadio.value];
+            }
+            // Set user data locally for immediate use
+            currentUser = userName;
+            startDate = new Date();
+         
+            // Update greeting and subtitle with challenge info
+            const greetingElement = document.getElementById('userGreeting');
+            const subtitleElement = document.getElementById('challengeSubtitle');
+            if (greetingElement) {
+                greetingElement.textContent = `Namaste, ${currentUser}! 🙏`;
+            }
+            if (subtitleElement) {
+                const actionText = selectedChallenge.type === 'break' ? 'Breaking' :
+                                 selectedChallenge.type === 'build' ? 'Building' : 'Transforming';
+                subtitleElement.textContent = `${challengeDuration} Day ${actionText}: ${selectedChallenge.name}`;
+            }
+         
+            // Hide welcome modal immediately
+            document.getElementById('welcomeModal').style.display = 'none';
+            // Save to localStorage
+            const userData = {
+                day: 0,
+                completed: false,
+                userName: userName,
+                userIcon: selectedUserIcon,
+                startDate: startDate.toISOString(),
+                completedAt: null,
+                challengeDuration: challengeDuration,
+                challengeType: selectedRadio.value,
+                challengeName: selectedChallenge.name,
+                challengeEmoji: selectedChallenge.emoji
+            };
+            createData(userData);
+        });
+        // Update UI
+        function updateUI() {
+            const challengeDays = allDays.filter(d => d.day > 0);
+            const completedCount = challengeDays.filter(d => d.completed).length;
+            const remainingCount = challengeDuration - completedCount;
+            const progressPercentage = Math.round((completedCount / challengeDuration) * 100);
+            const streak = calculateStreak();
+         
+            // Level system
+            const currentLevel = calculateLevel(completedCount);
+            const levelProgress = getLevelProgress(completedCount);
+            const levelBadge = getLevelBadge(currentLevel);
+            document.getElementById('completedDays').textContent = completedCount;
+            document.getElementById('remainingDays').textContent = remainingCount;
+            document.getElementById('levelNumber').textContent = currentLevel;
+            document.getElementById('levelBadge').textContent = levelBadge;
+            document.getElementById('levelProgressFill').style.width = levelProgress + '%';
+            document.getElementById('progressPercent').textContent = progressPercentage + '%';
+            document.getElementById('progressBar').style.width = progressPercentage + '%';
+            document.getElementById('progressBar').textContent = progressPercentage + '%';
+            // Check if challenge is complete
+            if (completedCount >= challengeDuration) {
+                showChallengeCompleteAnimation();
+            }
+            renderListView();
+            renderCalendarView();
+        }
+        // Level system
+        function calculateLevel(completedDays) {
+            return Math.floor(completedDays / 7) + 1;
+        }
+        function getLevelBadge(level) {
+            const badges = {
+                1: '🥉', 2: '🥈', 3: '🥇', 4: '🏆', 5: '👑',
+                6: '💎', 7: '⭐', 8: '🌟', 9: '✨', 10: '🔥',
+                11: '⚡', 12: '💫', 13: '🌠', 14: '🎯', 15: '🚀',
+                16: '🦅', 17: '🦁', 18: '🐅', 19: '🐉', 20: '🕉️'
+            };
+            return badges[Math.min(level, 20)] || '🕉️';
+        }
+        function getLevelProgress(completedDays) {
+            const currentLevelDays = completedDays % 7;
+            return (currentLevelDays / 7) * 100;
+        }
+        function showLevelUpAnimation(newLevel) {
+            const levelUpDiv = document.createElement('div');
+            levelUpDiv.className = 'level-up-animation';
+            levelUpDiv.innerHTML = `
+                <div class="level-up-text">LEVEL UP!</div>
+                <div class="level-up-badge">${getLevelBadge(newLevel)}</div>
+                <div class="level-up-text">Level ${newLevel}</div>
+            `;
+            document.body.appendChild(levelUpDiv);
+         
+            setTimeout(() => {
+                levelUpDiv.remove();
+            }, 2000);
+        }
+        // Calculate streak
+        function calculateStreak() {
+            const challengeDays = allDays.filter(d => d.day > 0).sort((a, b) => b.day - a.day);
+            let streak = 0;
+            for (let i = 0; i < challengeDays.length; i++) {
+                if (challengeDays[i].completed && challengeDays[i].day === challengeDays.length - i) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+        // Get next unlocked day
+        function getNextUnlockedDay() {
+            const challengeDays = allDays.filter(d => d.day > 0);
+            const completedDays = challengeDays.filter(d => d.completed);
+            const nextDay = completedDays.length + 1;
+            return Math.min(nextDay, challengeDuration);
+        }
+        // Render List View
+        function renderListView() {
+            const listView = document.getElementById('listView');
+            listView.innerHTML = '';
+            const nextUnlocked = getNextUnlockedDay();
+            const vedicData = generateVedicData(challengeDuration);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            for (let i = 1; i <= challengeDuration; i++) {
+                const dayData = allDays.find(d => d.day === i);
+                const isCompleted = dayData?.completed || false;
+                let dayDate = new Date();
+                let dateStr = 'Not Started';
+             
+                if (startDate) {
+                    dayDate = new Date(startDate.getTime() + (i - 1) * 24 * 60 * 60 * 1000);
+                    dayDate.setHours(0, 0, 0, 0);
+                    dateStr = dayDate.toLocaleDateString('hi-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                    });
+                }
+                // Locked if sequential or future
+                const isLocked = (i > nextUnlocked && i > 1) || (startDate && dayDate > today);
+                const vedic = vedicData[i - 1];
+                const dayCard = document.createElement('div');
+                dayCard.className = `day-card ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+             
+                dayCard.innerHTML = `
+                    <div class="day-header">
+                        <div class="day-icon">
+                            ${isCompleted ? '<i class="fas fa-check-circle"></i>' :
+                              isLocked ? '<i class="fas fa-lock"></i>' :
+                              '<i class="fas fa-om"></i>'}
+                        </div>
+                        <div class="day-info">
+                            <div class="day-label">Day ${i}</div>
+                            <div class="day-date">
+                                <i class="fas fa-calendar-day"></i>
+                                ${dateStr}
+                            </div>
+                            <div class="day-mantra">${vedic.suvichar || 'ॐ शांति शांति शांति'}</div>
+                            <div class="day-status">
+                                ${isCompleted ? '<i class="fas fa-star"></i> Completed' :
+                                  isLocked ? '<i class="fas fa-lock"></i> Locked' :
+                                  '<i class="fas fa-play"></i> Ready'}
+                            </div>
+                        </div>
+                        ${!isLocked ? `
+                            <div class="checkbox-container">
+                                <div class="custom-checkbox ${isCompleted ? 'checked' : ''}" data-day="${i}">
+                                    <span class="checkmark">✓</span>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                if (!isLocked) {
+                    const checkbox = dayCard.querySelector('.custom-checkbox');
+                    if (checkbox) {
+                        checkbox.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            toggleDay(i, dayData);
+                        });
+                    }
+                }
+                listView.appendChild(dayCard);
+            }
+        }
+        // Render Calendar View
+        function renderCalendarView() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+         
+            document.getElementById('currentMonth').textContent =
+                `${monthNames[currentCalendarDate.getMonth()]} ${currentCalendarDate.getFullYear()}`;
+            const firstDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth(), 1);
+            const lastDay = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 0);
+            const startDateCalendar = new Date(firstDay);
+            startDateCalendar.setDate(startDateCalendar.getDate() - firstDay.getDay());
+            calendarGrid.innerHTML = '';
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDateCalendar);
+                currentDate.setDate(startDateCalendar.getDate() + i);
+                currentDate.setHours(0, 0, 0, 0);
+             
+                const isCurrentMonth = currentDate.getMonth() === currentCalendarDate.getMonth();
+                const isToday = currentDate.toDateString() === today.toDateString();
+             
+                // Check if this date is part of the challenge
+                let challengeDay = 0;
+                let isCompleted = false;
+             
+                if (startDate && currentUser) {
+                    const userStartDate = new Date(allDays.find(d => d.userName)?.startDate || startDate);
+                    userStartDate.setHours(0, 0, 0, 0);
+                    const daysDiff = Math.floor((currentDate - userStartDate) / (1000 * 60 * 60 * 24));
+                    if (daysDiff >= 0 && daysDiff < challengeDuration) {
+                        challengeDay = daysDiff + 1;
+                        const dayData = allDays.find(d => d.day === challengeDay);
+                        isCompleted = dayData?.completed || false;
+                    }
+                }
+                const nextUnlocked = getNextUnlockedDay();
+                const isLocked = (challengeDay > nextUnlocked && challengeDay > 1) || currentDate > today;
+                const calendarDay = document.createElement('div');
+                calendarDay.className = `calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${isToday ? 'today' : ''} ${challengeDay > 0 ? 'challenge-day' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
+             
+                // Check if this challenge day should show cross (past due and not completed)
+                let showCross = false;
+                if (challengeDay > 0 && !isCompleted && startDate) {
+                    showCross = currentDate < today; // Past date and not completed
+                }
+                calendarDay.innerHTML = `
+                    <div class="calendar-day-number">${currentDate.getDate()}</div>
+                    ${challengeDay > 0 ? `<div class="calendar-day-indicator"><i class="fas fa-om"></i></div>` : ''}
+                    ${isCompleted ? '<div class="calendar-checkmark"><i class="fas fa-check-circle"></i></div>' : ''}
+                    ${showCross ? '<div class="calendar-cross"><i class="fas fa-times-circle"></i></div>' : ''}
+                `;
+                if (challengeDay > 0 && isCurrentMonth && !isLocked) {
+                    calendarDay.addEventListener('click', () => {
+                        const dayData = allDays.find(d => d.day === challengeDay);
+                        toggleDay(challengeDay, dayData);
+                    });
+                }
+                calendarGrid.appendChild(calendarDay);
+            }
+        }
+        // Calendar navigation
+        document.getElementById('prevMonth').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+            renderCalendarView();
+        });
+        document.getElementById('nextMonth').addEventListener('click', () => {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+            renderCalendarView();
+        });
+        // Show fullscreen celebration
+        function showFullscreenCelebration(dayNumber) {
+            const celebrationDiv = document.createElement('div');
+            celebrationDiv.className = 'fullscreen-celebration';
+         
+            // Create fireworks
+            const fireworksDiv = document.createElement('div');
+            fireworksDiv.className = 'fireworks';
+         
+            // Add multiple fireworks
+            for (let i = 0; i < 20; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = Math.random() * 100 + '%';
+                firework.style.top = Math.random() * 100 + '%';
+                firework.style.backgroundColor = ['#ffd700', '#ff8c00', '#ff6b6b', '#4ecdc4', '#45b7d1'][Math.floor(Math.random() * 5)];
+                firework.style.animationDelay = Math.random() * 2 + 's';
+                fireworksDiv.appendChild(firework);
+            }
+         
+            celebrationDiv.innerHTML = `
+                <div class="celebration-content">
+                    <div class="celebration-emoji">🎉</div>
+                    <div class="celebration-title">Day ${dayNumber} पूर्ण!</div>
+                    <div class="celebration-message">
+                        🙏 बधाई हो! आपका संकल्प दृढ़ है।<br>
+                        ✨ आप सही राह पर आगे बढ़ रहे हैं।<br>
+                        💪 अपनी यात्रा जारी रखें!
+                    </div>
+                    <button onclick="this.closest('.fullscreen-celebration').remove()" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a0a2e; border: none; padding: 15px 30px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 18px; display: flex; align-items: center; gap: 10px; margin: 0 auto;">
+                        <i class="fas fa-check"></i> धन्यवाद
+                    </button>
+                </div>
+            `;
+         
+            celebrationDiv.appendChild(fireworksDiv);
+            document.body.appendChild(celebrationDiv);
+         
+            // Auto remove after 8 seconds
+            setTimeout(() => {
+                if (celebrationDiv.parentElement) {
+                    celebrationDiv.remove();
+                }
+            }, 8000);
+        }
+        // Show challenge complete animation
+        function showChallengeCompleteAnimation() {
+            // Prevent multiple animations
+            if (document.querySelector('.challenge-complete-celebration')) return;
+         
+            const celebrationDiv = document.createElement('div');
+            celebrationDiv.className = 'fullscreen-celebration challenge-complete-celebration';
+         
+            // Create massive fireworks
+            const fireworksDiv = document.createElement('div');
+            fireworksDiv.className = 'fireworks';
+         
+            for (let i = 0; i < 50; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = Math.random() * 100 + '%';
+                firework.style.top = Math.random() * 100 + '%';
+                firework.style.backgroundColor = ['#ffd700', '#ff8c00', '#ff6b6b', '#4ecdc4', '#45b7d1', '#f39c12', '#e74c3c'][Math.floor(Math.random() * 7)];
+                firework.style.animationDelay = Math.random() * 3 + 's';
+                firework.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                fireworksDiv.appendChild(firework);
+            }
+         
+            const userData = allDays.find(d => d.userName);
+            const challengeInfo = selectedChallenge ? selectedChallenge.name : 'Personal Growth';
+         
+            celebrationDiv.innerHTML = `
+                <div class="celebration-content">
+                    <div class="celebration-emoji">🏆</div>
+                    <div class="celebration-title">चुनौती पूर्ण!</div>
+                    <div class="celebration-message">
+                        🎯 ${challengeDuration} दिन की "${challengeInfo}" चुनौती सफलतापूर्वक पूरी!<br>
+                        🙏 आपने अपना संकल्प निभाया है।<br>
+                        ✨ यह एक महान उपलब्धि है!<br><br>
+                        क्या आप अपनी यात्रा जारी रखना चाहते हैं?
+                    </div>
+                    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 30px;">
+                        <button class="extend-challenge-btn" onclick="extendChallenge()">
+                            <i class="fas fa-plus"></i> चुनौती बढ़ाएं
+                        </button>
+                        <button class="extend-challenge-btn" onclick="startNewChallenge()">
+                            <i class="fas fa-refresh"></i> नई चुनौती
+                        </button>
+                        <button onclick="this.closest('.fullscreen-celebration').remove()" style="background: rgba(255, 215, 0, 0.2); border: 3px solid #ffd700; color: #ffd700; padding: 20px 40px; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 18px; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-times"></i> बंद करें
+                        </button>
+                    </div>
+                </div>
+            `;
+         
+            celebrationDiv.appendChild(fireworksDiv);
+            document.body.appendChild(celebrationDiv);
+        }
+        // Extend challenge
+        function extendChallenge() {
+            document.querySelector('.challenge-complete-celebration').remove();
+            document.getElementById('welcomeModal').style.display = 'flex';
+         
+            // Pre-fill user data
+            const userData = allDays.find(d => d.userName);
+            if (userData) {
+                document.getElementById('nameInput').value = userData.userName;
+                selectedUserIcon = userData.userIcon || '👤';
+                document.getElementById('selectedIcon').textContent = selectedUserIcon;
+            }
+        }
+        // Start new challenge
+        function startNewChallenge() {
+            document.querySelector('.challenge-complete-celebration').remove();
+            showResetModal();
+        }
+        // Show Web Share Modal (Updated without Canva URL)
+        function showWebShareModal() {
+            const promoText = `🕉️ SANKALP - Transform Your Life!\n\n✨ Join me in this amazing challenge app that helps build good habits and break bad ones.\n\n🎯 Features:\n• 21-365 day challenges\n• Level up system with badges\n• Beautiful animations\n• Progress tracking\n• Vedic wisdom integration\n\n💪 Start your transformation journey today!\n\n#SANKALP #HabitTracker #PersonalGrowth #Mindfulness`;
+            const shareUrl = window.location.href; // Use current URL (GitHub Pages or local)
+            document.getElementById('webshareProgress').textContent = 'Join SANKALP!';
+            document.getElementById('webshareSubtitle').textContent = 'Challenge Your Habits';
+            // WhatsApp
+            document.getElementById('webWhatsappShare').href = `https://wa.me/?text=${encodeURIComponent(promoText + '\n\n' + shareUrl)}`;
+            // Facebook
+            document.getElementById('webFacebookShare').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(promoText)}`;
+            // Twitter
+            document.getElementById('webTwitterShare').href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(promoText)}&url=${encodeURIComponent(shareUrl)}`;
+            // Telegram
+            document.getElementById('webTelegramShare').href = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(promoText)}`;
+            // LinkedIn
+            document.getElementById('webLinkedinShare').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(promoText)}`;
+            // Instagram
+            document.getElementById('webInstagramShare').onclick = (e) => {
+                e.preventDefault();
+                navigator.clipboard.writeText(promoText).then(() => {
+                    showCustomAlert('Text copied! Now paste it in your Instagram story or post 📷');
+                    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+                }).catch(() => {
+                    showCustomAlert('Please copy this text manually for Instagram: ' + promoText);
+                });
+            };
+            document.getElementById('webshareModal').style.display = 'flex';
+        }
+        // Close Web Share Modal
+        document.getElementById('closeWebshareBtn').addEventListener('click', () => {
+            document.getElementById('webshareModal').style.display = 'none';
+        });
+        // Check if day can be completed (date restriction)
+        function canCompleteDay(dayNumber) {
+            if (!startDate) return false;
+            const dayDate = new Date(startDate.getTime() + (dayNumber - 1) * 86400000);
+            dayDate.setHours(0, 0, 0, 0);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return dayDate <= today;
+        }
+        // Check if any day is already completed today
+        function isDayCompletedToday() {
+            const todayStr = new Date().toDateString();
+            return allDays.some(day => {
+                if (!day.completedAt || !day.completed) return false;
+                const completedDate = new Date(day.completedAt).toDateString();
+                return completedDate === todayStr;
+            });
+        }
+        // Toggle day completion
+        async function toggleDay(dayNumber, existingData) {
+            const nextUnlocked = getNextUnlockedDay();
+         
+            // Date restriction: can't mark future days
+            if (!canCompleteDay(dayNumber)) {
+                const dayDate = new Date(startDate.getTime() + (dayNumber - 1) * 86400000);
+                dayDate.setHours(0, 0, 0, 0);
+                showCustomAlert(`इस task को ${dayDate.toLocaleDateString('hi-IN')} या उसके बाद ही mark कर सकते हैं। भूले हुए पुराने tasks को बाद में mark करें। 📅`);
+                return;
+            }
+         
+            // Sequential lock
+            if (dayNumber > nextUnlocked && dayNumber > 1) {
+                showCustomAlert(`पहले Day ${nextUnlocked} पूरा करें ताकि यह day unlock हो जाए! 🔒`);
+                return;
+            }
+         
+            // One per day restriction
+            if (!existingData || !existingData.completed) {
+                if (isDayCompletedToday()) {
+                    const todayDate = new Date().toLocaleDateString('hi-IN');
+                    showCustomAlert(`हर task उसकी date पर या बाद में mark होता है, पहले नहीं। अगर भूल गए तो बाद में कर सकते हैं। आज (${todayDate}) केवल एक task mark कर चुके हैं। 📅`);
+                    return;
+                }
+            }
+         
+            let wasCompleted = false;
+            const previousCompletedCount = allDays.filter(d => d.day > 0 && d.completed).length;
+            const previousLevel = calculateLevel(previousCompletedCount);
+            if (existingData) {
+                // Update existing data
+                existingData.completed = !existingData.completed;
+                existingData.completedAt = existingData.completed ? new Date().toISOString() : null;
+                wasCompleted = existingData.completed;
+             
+                updateData(existingData);
+            } else {
+                // Create new day data locally
+                const newData = {
+                    day: dayNumber,
+                    completed: true,
+                    completedAt: new Date().toISOString(),
+                    userName: currentUser,
+                    startDate: startDate.toISOString(),
+                    challengeDuration: challengeDuration
+                };
+             
+                // Add to local array immediately
+                allDays.push(newData);
+                wasCompleted = true;
+             
+                saveData();
+            }
+         
+            // Update UI immediately
+            updateUI();
+         
+            // Show animations if completed
+            if (wasCompleted) {
+                // Show fullscreen celebration
+                showFullscreenCelebration(dayNumber);
+             
+                // Check for level up
+                const newCompletedCount = allDays.filter(d => d.day > 0 && d.completed).length;
+                const newLevel = calculateLevel(newCompletedCount);
+             
+                if (newLevel > previousLevel) {
+                    setTimeout(() => {
+                        showLevelUpAnimation(newLevel);
+                    }, 2000); // Show after celebration
+                }
+            }
+        }
+        // Custom alert function
+        function showCustomAlert(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.style.cssText = `
+                position: fixed;
+                top: 25px;
+                right: 25px;
+                background: linear-gradient(45deg, #ffd700, #ff8c00);
+                color: #1a0a2e;
+                padding: 18px 30px;
+                border-radius: 20px;
+                font-weight: 600;
+                z-index: 2000;
+                box-shadow: 0 12px 35px rgba(255, 215, 0, 0.3);
+                animation: slideIn 0.3s ease-out;
+                font-size: 16px;
+            `;
+            alertDiv.textContent = message;
+            document.body.appendChild(alertDiv);
+         
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 4000);
+        }
+        // Show blessing message
+        function showBlessingMessage(dayNumber) {
+            const blessings = [
+                "🙏 आपका संकल्प दृढ़ है! भगवान आपको शक्ति दें।",
+                "✨ महान! आपकी यात्रा प्रेरणादायक है।",
+                "🕉️ शुभकामनाएं! आप सही राह पर हैं।",
+                "💫 बधाई हो! आपका अभ्यास फलदायी है।",
+                "🌟 अद्भुत! आपकी मेहनत रंग ला रही है।",
+                "🙏 गुरु कृपा से आप आगे बढ़ रहे हैं।",
+                "✨ आपका समर्पण सराहनीय है।",
+                "🕉️ ईश्वर आपको सफलता दे।"
+            ];
+         
+            const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
+         
+            const blessingDiv = document.createElement('div');
+            blessingDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(135deg, rgba(26, 10, 46, 0.98), rgba(61, 30, 109, 0.98));
+                border: 4px solid #ffd700;
+                border-radius: 30px;
+                padding: 50px;
+                text-align: center;
+                z-index: 2000;
+                box-shadow: 0 25px 80px rgba(255, 215, 0, 0.4);
+                backdrop-filter: blur(15px);
+                animation: blessingAppear 0.5s ease-out;
+                max-width: 450px;
+                width: 95%;
+            `;
+         
+            blessingDiv.innerHTML = `
+                <div style="font-size: 52px; margin-bottom: 25px;">🙏</div>
+                <div style="font-size: 28px; color: #ffd700; font-weight: 700; margin-bottom: 20px;">Day ${dayNumber} पूर्ण!</div>
+                <div style="font-size: 20px; color: #ff8c00; line-height: 1.6; margin-bottom: 30px;">${randomBlessing}</div>
+                <button onclick="this.parentElement.remove()" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a0a2e; border: none; padding: 15px 30px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 16px;">धन्यवाद 🙏</button>
+            `;
+         
+            document.body.appendChild(blessingDiv);
+         
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (blessingDiv.parentElement) {
+                    blessingDiv.remove();
+                }
+            }, 5000);
+        }
+        // Show share modal (Updated without Canva URL)
+        function showShareModal(completedCount) {
+            const progressPercentage = Math.round((completedCount / challengeDuration) * 100);
+         
+            // Update share content with user info
+            const userData = allDays.find(d => d.userName);
+            const userIcon = userData?.userIcon || selectedUserIcon || '👤';
+            const userName = userData?.userName || currentUser || 'User';
+         
+            document.getElementById('shareProgress').textContent = `${completedCount}/${challengeDuration}`;
+            document.getElementById('shareSubtitle').textContent = `${progressPercentage}% Complete!`;
+            document.getElementById('shareUserIcon').textContent = userIcon;
+            document.getElementById('shareUserName').textContent = userName;
+         
+            updateSocialShareLinks(completedCount, completedCount, progressPercentage);
+            document.getElementById('shareModal').style.display = 'flex';
+        }
+        // Update social share links (Updated without Canva URL)
+        function updateSocialShareLinks(dayNumber, completedCount, progressPercentage) {
+            const userData = allDays.find(d => d.userName);
+            const userName = userData?.userName || currentUser || 'User';
+            const challengeInfo = selectedChallenge ? `${selectedChallenge.name} ${selectedChallenge.emoji}` : 'Personal Growth';
+            const challengeTypeText = selectedChallenge?.type === 'break' ? 'Breaking' :
+                                    selectedChallenge?.type === 'build' ? 'Building' : 'Transforming';
+         
+            const shareText = `🕉️ SANKALP Challenge Progress!\n\n👤 Name: ${userName}\n🎯 Challenge: ${challengeTypeText} ${challengeInfo}\n✅ Days Completed: ${completedCount}/${challengeDuration}\n📊 Progress: ${progressPercentage}%\n\n💪 Transforming my life one day at a time!\n\n#SANKALP #Challenge #PersonalGrowth #Mindfulness`;
+            const shareUrl = window.location.href; // Use current URL
+            // WhatsApp
+            document.getElementById('whatsappShare').href =
+                `https://wa.me/?text=${encodeURIComponent(shareText + '\n\n' + shareUrl)}`;
+            // Facebook
+            document.getElementById('facebookShare').href =
+                `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+            // Twitter
+            document.getElementById('twitterShare').href =
+                `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+            // Telegram
+            document.getElementById('telegramShare').href =
+                `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+            // LinkedIn
+            document.getElementById('linkedinShare').href =
+                `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}&summary=${encodeURIComponent(shareText)}`;
+            // Instagram (opens Instagram app or website)
+            document.getElementById('instagramShare').onclick = (e) => {
+                e.preventDefault();
+                // Copy text to clipboard for Instagram
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showCustomAlert('Text copied! Now paste it in your Instagram story or post 📷');
+                    // Try to open Instagram
+                    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+                }).catch(() => {
+                    showCustomAlert('Please copy this text manually for Instagram: ' + shareText);
+                });
+            };
+        }
+        // Export Data to CSV
+        function exportData() {
+            if (allDays.length === 0) {
+                showCustomAlert('No data to export! Start your challenge first. 📊');
+                return;
+            }
+            const headers = ['Day', 'Completed', 'UserName', 'UserIcon', 'StartDate', 'CompletedAt', 'ChallengeDuration', 'ChallengeType', 'ChallengeName', 'ChallengeEmoji'];
+            const csvContent = [
+                headers.join(','),
+                ...allDays.map(row => [
+                    row.day || '',
+                    row.completed || false,
+                    `"${row.userName || ''}"`,
+                    `"${row.userIcon || ''}"`,
+                    row.startDate || '',
+                    row.completedAt || '',
+                    row.challengeDuration || '',
+                    row.challengeType || '',
+                    `"${row.challengeName || ''}"`,
+                    `"${row.challengeEmoji || ''}"`
+                ].join(','))
+            ].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `sankalp_challenge_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showCustomAlert('Data exported successfully as CSV! Open in Excel. 📥');
+        }
+        // View Toggle
+        document.getElementById('listViewBtn').addEventListener('click', () => {
+            document.getElementById('listView').style.display = 'grid';
+            document.getElementById('calendarView').classList.remove('active');
+            document.getElementById('listViewBtn').classList.add('active');
+            document.getElementById('calendarViewBtn').classList.remove('active');
+        });
+        document.getElementById('calendarViewBtn').addEventListener('click', () => {
+            document.getElementById('listView').style.display = 'none';
+            document.getElementById('calendarView').classList.add('active');
+            document.getElementById('listViewBtn').classList.remove('active');
+            document.getElementById('calendarViewBtn').classList.add('active');
+        });
+        document.getElementById('shareBtn').addEventListener('click', () => {
+            const completedCount = allDays.filter(d => d.day > 0 && d.completed).length;
+            if (completedCount > 0) {
+                showShareModal(completedCount);
+            } else {
+                showCustomAlert("Complete at least one day to share your progress! 🌟");
+            }
+        });
+        document.getElementById('closeShareBtn').addEventListener('click', () => {
+            document.getElementById('shareModal').style.display = 'none';
+        });
+        // Drawer functionality
+        let currentView = 'dashboard';
+        function openDrawer() {
+            document.getElementById('drawerOverlay').classList.add('active');
+            document.getElementById('drawer').classList.add('active');
+        }
+        function closeDrawer() {
+            document.getElementById('drawerOverlay').classList.remove('active');
+            document.getElementById('drawer').classList.remove('active');
+        }
+        function switchView(viewName) {
+            currentView = viewName;
+         
+            // Update drawer active state
+            document.querySelectorAll('.drawer-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.view === viewName) {
+                    item.classList.add('active');
+                }
+            });
+            // Show/hide sections based on view
+            const listView = document.getElementById('listView');
+            const calendarView = document.getElementById('calendarView');
+            const statsContainer = document.querySelector('.stats-container');
+            const mantraSection = document.querySelector('.mantra-section');
+            const progressSection = document.querySelector('.progress-section');
+            const viewToggle = document.querySelector('.view-toggle');
+            // Hide all sections first
+            listView.style.display = 'none';
+            calendarView.classList.remove('active');
+            statsContainer.style.display = 'none';
+            mantraSection.style.display = 'none';
+            progressSection.style.display = 'none';
+            viewToggle.style.display = 'none';
+            // Show relevant sections based on view
+            switch(viewName) {
+                case 'dashboard':
+                    statsContainer.style.display = 'grid';
+                    mantraSection.style.display = 'block';
+                    progressSection.style.display = 'block';
+                    viewToggle.style.display = 'flex';
+                    listView.style.display = 'grid';
+                    break;
+                case 'list':
+                    listView.style.display = 'grid';
+                    break;
+                case 'calendar':
+                    calendarView.classList.add('active');
+                    break;
+                case 'progress':
+                    statsContainer.style.display = 'grid';
+                    progressSection.style.display = 'block';
+                    break;
+                case 'mantras':
+                    mantraSection.style.display = 'block';
+                    break;
+                case 'share':
+                    const completedCount = allDays.filter(d => d.day > 0 && d.completed).length;
+                    if (completedCount > 0) {
+                        showShareModal(completedCount);
+                    } else {
+                        showCustomAlert("Complete at least one day to share your progress! 🌟");
+                    }
+                    break;
+                case 'export':
+                    exportData();
+                    break;
+                case 'webshare':
+                    showWebShareModal();
+                    break;
+                case 'help':
+                    window.open('https://t.me/+SYTxRx-z7ARhNWQ1', '_blank', 'noopener,noreferrer');
+                    break;
+                case 'youtube':
+                    window.open('https://youtube.com/playlist?list=PL8yCum4Nmfmn5_tDfLLY30SpwMeX2u7v8&si=RG40VDVwduIzvJ_V', '_blank', 'noopener,noreferrer');
+                    break;
+                case 'query':
+                    window.open('https://t.me/shailuk7', '_blank', 'noopener,noreferrer');
+                    break;
+                case 'reset':
+                    showResetModal();
+                    break;
+            }
+         
+            closeDrawer();
+        }
+        // Reset functionality
+        function showResetModal() {
+            document.getElementById('resetModal').style.display = 'flex';
+        }
+        function hideResetModal() {
+            document.getElementById('resetModal').style.display = 'none';
+        }
+        async function resetChallenge() {
+            try {
+                // Clear local data
+                allDays = [];
+                currentUser = null;
+                startDate = null;
+                selectedChallenge = null;
+                selectedUserIcon = '👤';
+                challengeDuration = 90;
+             
+                // Reset UI
+                document.getElementById('userGreeting').textContent = '';
+                document.getElementById('challengeSubtitle').textContent = 'Vedic Challenge';
+                updateUI();
+             
+                // Show welcome modal
+                document.getElementById('welcomeModal').style.display = 'flex';
+             
+                // Reset form
+                document.getElementById('nameInput').value = '';
+                document.getElementById('selectedIcon').textContent = '👤';
+                document.querySelectorAll('input[name="challengeDuration"]').forEach(radio => {
+                    radio.checked = radio.value === '90';
+                });
+                document.querySelectorAll('input[name="challengeType"]').forEach(radio => {
+                    radio.checked = false;
+                });
+                document.getElementById('customChallenge').style.display = 'none';
+                document.getElementById('customChallenge').value = '';
+             
+                saveData();
+                hideResetModal();
+                showCustomAlert('Challenge reset successfully! Start fresh! 🌟');
+             
+            } catch (error) {
+                console.error('Reset error:', error);
+                showCustomAlert('Reset completed! You can start a new challenge now! ✨');
+                hideResetModal();
+            }
+        }
+        // Event listeners for drawer
+        document.getElementById('menuBtn').addEventListener('click', openDrawer);
+        document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+        document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+        // Reset modal event listeners
+        document.getElementById('confirmResetBtn').addEventListener('click', resetChallenge);
+        document.getElementById('cancelResetBtn').addEventListener('click', hideResetModal);
+        // Drawer menu items
+        document.querySelectorAll('.drawer-item').forEach(item => {
+            item.addEventListener('click', () => {
+                switchView(item.dataset.view);
+            });
+        });
+        // Hindu God Wallpapers Rotation
+        const hinduWallpapers = [
+            'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+            'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+            'https://images.unsplash.com/photo-1604608672516-f1b9b1d87c8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+            'https://images.unsplash.com/photo-1609952651468-7c4ac2b4c7b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+            'https://images.unsplash.com/photo-1578662015928-3dae4d2bc7f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+            'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80',
+            'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80'
+        ];
+        let currentWallpaperIndex = 0;
+        function rotateBackground() {
+            currentWallpaperIndex = (currentWallpaperIndex + 1) % hinduWallpapers.length;
+            document.documentElement.style.setProperty('--bg-image', `url('${hinduWallpapers[currentWallpaperIndex]}')`);
+        }
+        // Change background every 30 seconds
+        setInterval(rotateBackground, 30000);
+        // Initialize app
+        function initializeApp() {
+            loadData();
+        }
+        // Multiple initialization methods
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            setTimeout(initializeApp, 100);
+        }
+        window.addEventListener('load', function() {
+            setTimeout(initializeApp, 200);
+        });
+        setTimeout(() => {
+            if (!currentUser && !document.getElementById('welcomeModal').style.display) {
+                initializeApp();
+            }
+        }, 1000);
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99add6853764b2d3',t:'MTc2MjUyOTA3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
