@@ -6,6 +6,7 @@
   <title>SANKALP - Challenge Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Noto+Sans+Devanagari:wght@400;600;700&amp;display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     :root {
       --bg-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
@@ -1563,7 +1564,7 @@
       }
     }
 
-    /* Responsive Design */
+    /* Responsive Design - FIXED FOR MOBILE DAYS DISPLAY */
     @media (max-width: 768px) {
       .app-title {
         font-size: 42px;
@@ -1576,6 +1577,7 @@
 
       .days-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
       }
 
       .calendar-view {
@@ -1599,17 +1601,17 @@
       }
 
       .calendar-day {
-        min-height: 30px;
+        min-height: 40px;
         border-radius: 8px;
         padding: 2px;
       }
 
       .calendar-day-number {
-        font-size: 14px;
+        font-size: 16px;
       }
 
       .calendar-day-indicator {
-        font-size: 10px;
+        font-size: 12px;
       }
 
       .weekday {
@@ -1686,6 +1688,19 @@
         padding: 12px 20px;
         font-size: 14px;
       }
+
+      /* Fix for day cards on mobile */
+      .day-card {
+        padding: 20px;
+      }
+
+      .day-label {
+        font-size: 22px;
+      }
+
+      .day-mantra {
+        font-size: 18px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -1695,12 +1710,12 @@
       }
 
       .calendar-day {
-        min-height: 25px;
+        min-height: 35px;
         font-size: 12px;
       }
 
       .calendar-day-number {
-        font-size: 12px;
+        font-size: 14px;
       }
 
       .weekday {
@@ -1715,6 +1730,29 @@
       .selected-icon-display {
         flex-direction: column;
         gap: 15px;
+      }
+
+      /* Additional fixes for very small screens */
+      .day-card {
+        padding: 15px;
+      }
+
+      .day-header {
+        gap: 15px;
+      }
+
+      .day-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+      }
+
+      .day-label {
+        font-size: 20px;
+      }
+
+      .day-mantra {
+        font-size: 16px;
       }
     }
 
@@ -2398,139 +2436,47 @@
   </div>
 
   <script>
-    // Google Form Configuration
-    const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSd50k37Bua1uUfqMSjAzjTCcTqslYXedh3Nh4WUQpBOlttWSA/formResponse';
+    // Sanskrit Mantras
+    const mantras = [
+        "ॐ ऐं सरस्वत्यै नमः। - मैं माँ सरस्वती को नमस्कार करता हूँ, जो ज्ञान, बुद्धि, वाणी और विद्या की देवी हैं।",
+        "गुरुर्ब्रह्मा गुरुर्विष्णुः गुरुर्देवो महेश्वरः। गुरुः साक्षात् परं ब्रह्म तस्मै श्रीगुरवे नमः॥",
+        "ॐ भूर्भुवः स्वः। तत्सवितुर्वरेण्यं। भर्गो देवस्य धीमहि। धियो यो नः प्रचोदयात्॥",
+        "ॐ गं गणपतये नमः। - मैं भगवान गणेश को नमस्कार करता हूँ, जो सभी विघ्नों का नाश करने वाले हैं।",
+        "ॐ हनुमते नमः। - मैं श्री हनुमान जी को नमस्कार करता हूँ, जो पराक्रम, बुद्धि, साहस और एकाग्रता के प्रतीक हैं।",
+        "ॐ दूं दुर्गायै नमः। - माँ दुर्गा को नमस्कार, जो शक्ति, साहस और विजय की अधिष्ठात्री हैं।",
+        "ॐ नमः शिवाय। - भगवान शिव को नमस्कार, जो ज्ञान, त्याग, और पवित्रता के स्वरूप हैं।",
+        "ॐ ह्रां ह्रीं ह्रौं सः सूर्याय नमः। - सूर्य देव को नमस्कार, जो समस्त ब्रह्माण्ड को प्रकाशित करते हैं।",
+        "ॐ श्रीं महालक्ष्म्यै नमः। - माता महालक्ष्मी को नमस्कार, जो सफलता, सौभाग्य और समृद्धि की अधिष्ठात्री हैं।",
+        "ॐ मुनी मुनी महामुने शाक्यमुनये स्वाहा। - भगवान गौतम बुद्ध को नमस्कार।",
+        "ॐ मेधादक्षिणाकालिकायै नमः। - देवी दक्षिणाकाली को नमस्कार, जो बुद्धि, स्मरणशक्ति और समझ का वरदान देती हैं।",
+        "ॐ शान्तिः शान्तिः शान्तिः। - सभी प्रकार की शान्ति — देह में, मन में और आत्मा में — स्थापित हो।",
+        "संकल्पं कुर्वे विजयं प्राप्नुयाम्। - मैं यह दृढ़ संकल्प करता हूँ कि मैं अपने श्रम, निष्ठा और एकाग्रता से सफलता प्राप्त करूँगा।",
+        "विद्यां ददाति विनयं, विनयाद् याति पात्रताम्। पात्रत्वात् धनमाप्नोति, धनात् धर्मं ततः सुखम्॥",
+        "ॐ असतो मा सद्गमय। तमसो मा ज्योतिर्गमय। मृत्योर्माऽमृतं गमय॥",
+        "ॐ अपवित्रः पवित्रो वा सर्वावस्थां गतोऽपि वा। यः स्मरेत् पुण्डरीकाक्षं स बाह्याभ्यन्तरः शुचिः॥",
+        "ॐ श्रीं ह्रीं क्लीं नमः। - यह शक्तिशाली बीज मन्त्र है जो सफलता, सौभाग्य और आकर्षण प्रदान करता है।",
+        "धैर्यं सर्वार्थसाधनम्। - धैर्य ही सभी कार्यों की सिद्धि का आधार है।",
+        "ॐ नमो भगवते वासुदेवाय। - भगवान वासुदेव (श्रीकृष्ण) को नमस्कार।",
+        "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन। मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि॥",
+        "स्वाध्यायान्मा प्रमदः। - अपने अध्ययन, आत्मपाठ और स्वाध्याय में कभी आलस्य न करो।"
+    ];
 
-    // Entry IDs - APKE MILI HUI IDs
-    const GOOGLE_FORM_ENTRY_IDS = {
-        userName: 'entry.1620177149',
-        userIcon: 'entry.1827718283',
-        challengeDuration: 'entry.1082845232',
-        challengeType: 'entry.180883182',
-        challengeName: 'entry.944668201',
-        dayNumber: 'entry.222399236',
-        startDate: 'entry.629133394',
-        completedAt: 'entry.1729051800'
-    };
+    // Level System - 53 levels for 365 days (7 days per level)
+    const levelIcons = [
+        "🥚", "🐣", "🐥", "🐔", "🦄", "🐲", "🐉", "🦁", "🦅", "🦉",
+        "🐺", "🐗", "🐴", "🦓", "🦌", "🐘", "🦏", "🦛", "🐪", "🐫",
+        "🦒", "🦘", "🐃", "🐂", "🐄", "🐎", "🐖", "🐑", "🐐", "🐩",
+        "🐈", "🐇", "🐁", "🐀", "🐿️", "🦔", "🦇", "🐻", "🐨", "🐼",
+        "🦃", "🐔", "🐦", "🐧", "🕊️", "🦅", "🦆", "🦢", "🦜", "🦩",
+        "🦚", "🦉", "🦇"
+    ];
 
-    // Improved Google Form Submission Function
-    async function submitToGoogleForm(data) {
-        try {
-            const formData = new FormData();
-            
-            // Simple fields submit karein
-            if (data.userName) formData.append(GOOGLE_FORM_ENTRY_IDS.userName, data.userName);
-            if (data.userIcon) formData.append(GOOGLE_FORM_ENTRY_IDS.userIcon, data.userIcon);
-            if (data.challengeDuration) formData.append(GOOGLE_FORM_ENTRY_IDS.challengeDuration, data.challengeDuration.toString());
-            if (data.challengeType) formData.append(GOOGLE_FORM_ENTRY_IDS.challengeType, data.challengeType);
-            if (data.challengeName) formData.append(GOOGLE_FORM_ENTRY_IDS.challengeName, data.challengeName);
-            if (data.dayNumber) formData.append(GOOGLE_FORM_ENTRY_IDS.dayNumber, data.dayNumber.toString());
-            
-            // Date fields ko properly format karein
-            if (data.startDate) {
-                const startDate = new Date(data.startDate);
-                formData.append(GOOGLE_FORM_ENTRY_IDS.startDate + '_year', startDate.getFullYear().toString());
-                formData.append(GOOGLE_FORM_ENTRY_IDS.startDate + '_month', (startDate.getMonth() + 1).toString());
-                formData.append(GOOGLE_FORM_ENTRY_IDS.startDate + '_day', startDate.getDate().toString());
-            }
-            
-            if (data.completedAt) {
-                const completedDate = new Date(data.completedAt);
-                formData.append(GOOGLE_FORM_ENTRY_IDS.completedAt + '_year', completedDate.getFullYear().toString());
-                formData.append(GOOGLE_FORM_ENTRY_IDS.completedAt + '_month', (completedDate.getMonth() + 1).toString());
-                formData.append(GOOGLE_FORM_ENTRY_IDS.completedAt + '_day', completedDate.getDate().toString());
-            }
-
-            console.log('📤 Submitting to Google Form:', {
-                userName: data.userName,
-                challengeName: data.challengeName,
-                dayNumber: data.dayNumber
-            });
-
-            // Google Form ko submit karein - using FormData approach
-            await fetch(GOOGLE_FORM_URL, {
-                method: 'POST',
-                body: formData,
-                mode: 'no-cors'
-            });
-            
-            console.log('✅ Data submitted to Google Form');
-            return true;
-        } catch (error) {
-            console.error('❌ Error submitting to Google Form:', error);
-            return false;
-        }
-    }
-
-    // Configuration
-    const defaultConfig = {
-        app_title: "SANKALP",
-        challenge_subtitle: "Vedic Challenge",
-        mantra_label: "Today's Mantra",
-        welcome_message: "Welcome to your spiritual journey",
-        primary_color: "#ffd700",
-        secondary_color: "#ff8c00",
-        background_color: "#1a0a2e",
-        text_color: "#ffffff",
-        accent_color: "#8b3a62"
-    };
-
-    let config = { ...defaultConfig };
+    let currentMantraIndex = 0;
     let allDays = [];
     let currentUser = null;
     let startDate = null;
     let challengeDuration = 90;
     let currentCalendarDate = new Date();
-
-    // Sanskrit Mantras
-    const mantras = [
-        "ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं भर्गो देवस्य धीमहि धियो यो नः प्रचोदयात्",
-        "ॐ नमः शिवाय",
-        "ॐ गं गणपतये नमः",
-        "ॐ श्री महालक्ष्म्यै नमः",
-        "ॐ नमो भगवते वासुदेवाय",
-        "ॐ ह्रीं श्रीं क्लीं परमेश्वरि स्वाहा",
-        "ॐ सर्वे भवन्तु सुखिनः सर्वे सन्तु निरामयाः",
-        "ॐ शान्तिः शान्तिः शान्तिः",
-        "ॐ असतो मा सद्गमय तमसो मा ज्योतिर्गमय मृत्योर्मा अमृतं गमय",
-        "ॐ सह नाववतु सह नौ भुनक्तु सह वीर्यं करवावहै"
-    ];
-
-    let currentMantraIndex = 0;
-
-    // Vedic Icons and descriptions with Hindi Suvichar for each day
-    const vedicDayData = [
-        { icon: "🕉️", title: "OM Meditation", desc: "Begin with sacred OM chanting", suvichar: "ॐ सर्वे भवन्तु सुखिनः - सभी सुखी हों" },
-        { icon: "🌅", title: "Surya Namaskar", desc: "Sun salutation practice", suvichar: "सूर्य की भांति तेजस्वी बनो" },
-        { icon: "🧘‍♂️", title: "Dhyana", desc: "Deep meditation session", suvichar: "मन की शांति ही सच्चा धन है" },
-        { icon: "📿", title: "Japa Mala", desc: "Mantra repetition with beads", suvichar: "जप से जीवन में जादू आता है" },
-        { icon: "🪷", title: "Lotus Asana", desc: "Sacred yoga postures", suvichar: "कमल की भांति निर्मल रहो" },
-        { icon: "🔥", title: "Agni Hotra", desc: "Fire ceremony ritual", suvichar: "अग्नि सम पवित्र बनो" },
-        { icon: "💧", title: "Ganga Aarti", desc: "Water blessing ceremony", suvichar: "जल सा निर्मल हृदय रखो" },
-        { icon: "🌸", title: "Pushpa Puja", desc: "Flower offering ritual", suvichar: "फूल सा सुगंधित जीवन जियो" },
-        { icon: "🕯️", title: "Deepa Darshan", desc: "Light meditation practice", suvichar: "दीपक सा प्रकाश फैलाओ" },
-        { icon: "🎵", title: "Bhajan Kirtan", desc: "Devotional singing", suvichar: "संगीत से आत्मा को शुद्ध करो" }
-    ];
-
-    // Generate more vedic data for longer challenges
-    function generateVedicData(totalDays) {
-        const extendedData = [...vedicDayData];
-        while (extendedData.length < totalDays) {
-            extendedData.push(...vedicDayData);
-        }
-        return extendedData.slice(0, totalDays);
-    }
-
-    // Rotate mantras every 10 seconds
-    setInterval(() => {
-        currentMantraIndex = (currentMantraIndex + 1) % mantras.length;
-        const mantraElement = document.getElementById('mantraText');
-        mantraElement.style.animation = 'none';
-        setTimeout(() => {
-            mantraElement.textContent = mantras[currentMantraIndex];
-            mantraElement.style.animation = 'fadeIn 1s ease-in';
-        }, 50);
-    }, 10000);
 
     // Create floating particles
     function createParticles() {
@@ -2654,7 +2600,7 @@
     document.getElementById('iconConfirmBtn').addEventListener('click', confirmIconSelection);
 
     // Start journey
-    document.getElementById('startBtn').addEventListener('click', async () => {
+    document.getElementById('startBtn').addEventListener('click', () => {
         const nameInput = document.getElementById('nameInput');
         const userName = nameInput.value.trim();
         const selectedRadio = document.querySelector('input[name="challengeType"]:checked');
@@ -2729,26 +2675,26 @@
         localStorage.setItem('sankalp_user', JSON.stringify(userData));
         localStorage.setItem('sankalp_days', JSON.stringify(allDays));
         
-        // ✅ GOOGLE FORM SUBMIT - Challenge Start
-        try {
-            await submitToGoogleForm({
-                userName: userName,
-                userIcon: selectedUserIcon,
-                challengeDuration: challengeDuration,
-                challengeType: selectedRadio.value,
-                challengeName: selectedChallenge.name,
-                dayNumber: 0,
-                startDate: startDate.toISOString(),
-                completedAt: null
-            });
-            console.log('✅ Challenge start data submitted to Google Form');
-        } catch (error) {
-            console.log('⚠️ Google Form submission failed, but app continues');
-        }
-        
-        // Update UI regardless of SDK status
+        // Update UI
         updateUI();
     });
+
+    // Calculate current day based on start date
+    function getCurrentDay() {
+        if (!startDate) return 1;
+        
+        const today = new Date();
+        const start = new Date(startDate);
+        
+        // Reset both dates to midnight for accurate day calculation
+        today.setHours(0, 0, 0, 0);
+        start.setHours(0, 0, 0, 0);
+        
+        const timeDiff = today.getTime() - start.getTime();
+        const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+        
+        return Math.min(daysDiff + 1, challengeDuration);
+    }
 
     // Update UI
     function updateUI() {
@@ -2756,7 +2702,7 @@
         const completedCount = challengeDays.filter(d => d.completed).length;
         const remainingCount = challengeDuration - completedCount;
         const progressPercentage = Math.round((completedCount / challengeDuration) * 100);
-        const streak = calculateStreak();
+        const currentDay = getCurrentDay();
         
         // Level system
         const currentLevel = calculateLevel(completedCount);
@@ -2783,17 +2729,28 @@
 
     // Level system
     function calculateLevel(completedDays) {
-        return Math.floor(completedDays / 7) + 1;
+        // 53 levels for 365 days (7 days per level)
+        if (challengeDuration === 365) {
+            return Math.min(Math.floor(completedDays / 7) + 1, 53);
+        } else {
+            // For other durations, calculate levels proportionally
+            const totalLevels = Math.ceil(challengeDuration / 7);
+            return Math.min(Math.floor(completedDays / 7) + 1, totalLevels);
+        }
     }
 
     function getLevelBadge(level) {
-        const badges = {
-            1: '🥉', 2: '🥈', 3: '🥇', 4: '🏆', 5: '👑',
-            6: '💎', 7: '⭐', 8: '🌟', 9: '✨', 10: '🔥',
-            11: '⚡', 12: '💫', 13: '🌠', 14: '🎯', 15: '🚀',
-            16: '🦅', 17: '🦁', 18: '🐅', 19: '🐉', 20: '🕉️'
-        };
-        return badges[Math.min(level, 20)] || '🕉️';
+        // Use level icons array for 365 days, fallback to emoji for other durations
+        if (challengeDuration === 365 && level <= levelIcons.length) {
+            return levelIcons[level - 1];
+        } else {
+            // Fallback badges for other durations
+            const badges = {
+                1: '🥉', 2: '🥈', 3: '🥇', 4: '🏆', 5: '👑',
+                6: '💎', 7: '⭐', 8: '🌟', 9: '✨', 10: '🔥'
+            };
+            return badges[Math.min(level, 10)] || '🕉️';
+        }
     }
 
     function getLevelProgress(completedDays) {
@@ -2816,41 +2773,18 @@
         }, 2000);
     }
 
-    // Calculate streak
-    function calculateStreak() {
-        const challengeDays = allDays.filter(d => d.day > 0).sort((a, b) => b.day - a.day);
-        let streak = 0;
-        for (let i = 0; i < challengeDays.length; i++) {
-            if (challengeDays[i].completed && challengeDays[i].day === challengeDays.length - i) {
-                streak++;
-            } else {
-                break;
-            }
-        }
-        return streak;
-    }
-
-    // Get next unlocked day
-    function getNextUnlockedDay() {
-        const challengeDays = allDays.filter(d => d.day > 0);
-        const completedDays = challengeDays.filter(d => d.completed);
-        const nextDay = completedDays.length + 1;
-        return Math.min(nextDay, challengeDuration);
-    }
-
     // Render List View
     function renderListView() {
         const listView = document.getElementById('listView');
         listView.innerHTML = '';
-        const nextUnlocked = getNextUnlockedDay();
-        const vedicData = generateVedicData(challengeDuration);
+        const currentDay = getCurrentDay();
 
         for (let i = 1; i <= challengeDuration; i++) {
             const dayData = allDays.find(d => d.day === i);
             const isCompleted = dayData?.completed || false;
-            // Day 1 should always be unlocked, subsequent days unlock after previous completion
-            const isLocked = i > nextUnlocked && i > 1;
-            const vedic = vedicData[i - 1];
+            // Days are locked if they are in the future
+            const isLocked = i > currentDay;
+            const mantra = mantras[(i - 1) % mantras.length];
 
             const dayCard = document.createElement('div');
             dayCard.className = `day-card ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}`;
@@ -2881,7 +2815,7 @@
                             <i class="fas fa-calendar-day"></i>
                             ${dateStr}
                         </div>
-                        <div class="day-mantra">${vedic.suvichar || 'ॐ शांति शांति शांति'}</div>
+                        <div class="day-mantra">${mantra.split(' - ')[0]}</div>
                         <div class="day-status">
                             ${isCompleted ? '<i class="fas fa-star"></i> Completed' : 
                               isLocked ? '<i class="fas fa-lock"></i> Locked' : 
@@ -2940,7 +2874,7 @@
             let isCompleted = false;
             
             if (startDate && currentUser) {
-                const daysDiff = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24));
+                const daysDiff = Math.floor((currentDate - new Date(startDate)) / (1000 * 60 * 60 * 24));
                 if (daysDiff >= 0 && daysDiff < challengeDuration) {
                     challengeDay = daysDiff + 1;
                     const dayData = allDays.find(d => d.day === challengeDay);
@@ -2967,13 +2901,10 @@
                 ${showCross ? '<div class="calendar-cross"><i class="fas fa-times-circle"></i></div>' : ''}
             `;
 
-            if (challengeDay > 0 && isCurrentMonth) {
+            if (challengeDay > 0 && isCurrentMonth && challengeDay <= getCurrentDay()) {
                 calendarDay.addEventListener('click', () => {
                     const dayData = allDays.find(d => d.day === challengeDay);
-                    const nextUnlocked = getNextUnlockedDay();
-                    if (challengeDay <= nextUnlocked) {
-                        toggleDay(challengeDay, dayData);
-                    }
+                    toggleDay(challengeDay, dayData);
                 });
             }
 
@@ -3166,38 +3097,14 @@
         document.body.removeChild(textArea);
     }
 
-    // Check if day can be completed today - REMOVED DATE RESTRICTION
-    function canCompleteToday(dayNumber) {
-        // Allow completing any previous day that was missed
-        return true;
-    }
-
-    // Check if any day is already completed today
-    function isDayCompletedToday() {
-        const today = new Date().toDateString();
-        return allDays.some(day => {
-            if (!day.completedAt || !day.completed) return false;
-            const completedDate = new Date(day.completedAt).toDateString();
-            return completedDate === today;
-        });
-    }
-
     // Toggle day completion
-    async function toggleDay(dayNumber, existingData) {
-        const nextUnlocked = getNextUnlockedDay();
+    function toggleDay(dayNumber, existingData) {
+        const currentDay = getCurrentDay();
         
-        // Allow Day 1 to always be clickable, and subsequent days only if previous are completed
-        if (dayNumber > nextUnlocked && dayNumber > 1) {
-            showCustomAlert(`Complete Day ${nextUnlocked} first to unlock this day! 🔒`);
+        // Allow only past days and current day to be marked
+        if (dayNumber > currentDay) {
+            showCustomAlert(`You cannot mark future days! 🔒`);
             return;
-        }
-
-        // If trying to complete a new day, check if already completed one today
-        if (!existingData || !existingData.completed) {
-            if (isDayCompletedToday()) {
-                showCustomAlert(`आपने आज पहले से ही एक दिन पूरा किया है! कल का चैलेंज कल मार्क होगा। 📅`);
-                return;
-            }
         }
 
         let wasCompleted = false;
@@ -3224,26 +3131,6 @@
 
         // Save to localStorage
         localStorage.setItem('sankalp_days', JSON.stringify(allDays));
-        
-        // ✅ GOOGLE FORM SUBMIT - Day Completion
-        if (wasCompleted) {
-            try {
-                const userData = JSON.parse(localStorage.getItem('sankalp_user') || '{}');
-                await submitToGoogleForm({
-                    userName: userData.userName,
-                    userIcon: userData.userIcon,
-                    challengeDuration: userData.challengeDuration,
-                    challengeType: userData.challengeType,
-                    challengeName: userData.challengeName,
-                    dayNumber: dayNumber,
-                    startDate: userData.startDate,
-                    completedAt: new Date().toISOString()
-                });
-                console.log('✅ Day completion data submitted to Google Form');
-            } catch (error) {
-                console.log('⚠️ Google Form submission failed, but app continues');
-            }
-        }
         
         // Update UI immediately
         updateUI();
@@ -3290,57 +3177,6 @@
         }, 4000);
     }
 
-    // Show blessing message
-    function showBlessingMessage(dayNumber) {
-        const blessings = [
-            "🙏 आपका संकल्प दृढ़ है! भगवान आपको शक्ति दें।",
-            "✨ महान! आपकी यात्रा प्रेरणादायक है।",
-            "🕉️ शुभकामनाएं! आप सही राह पर हैं।",
-            "💫 बधाई हो! आपका अभ्यास फलदायी है।",
-            "🌟 अद्भुत! आपकी मेहनत रंग ला रही है।",
-            "🙏 गुरु कृपा से आप आगे बढ़ रहे हैं।",
-            "✨ आपका समर्पण सराहनीय है।",
-            "🕉️ ईश्वर आपको सफलता दे।"
-        ];
-        
-        const randomBlessing = blessings[Math.floor(Math.random() * blessings.length)];
-        
-        const blessingDiv = document.createElement('div');
-        blessingDiv.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, rgba(26, 10, 46, 0.98), rgba(61, 30, 109, 0.98));
-            border: 4px solid #ffd700;
-            border-radius: 30px;
-            padding: 50px;
-            text-align: center;
-            z-index: 2000;
-            box-shadow: 0 25px 80px rgba(255, 215, 0, 0.4);
-            backdrop-filter: blur(15px);
-            animation: blessingAppear 0.5s ease-out;
-            max-width: 450px;
-            width: 95%;
-        `;
-        
-        blessingDiv.innerHTML = `
-            <div style="font-size: 52px; margin-bottom: 25px;">🙏</div>
-            <div style="font-size: 28px; color: #ffd700; font-weight: 700; margin-bottom: 20px;">Day ${dayNumber} पूर्ण!</div>
-            <div style="font-size: 20px; color: #ff8c00; line-height: 1.6; margin-bottom: 30px;">${randomBlessing}</div>
-            <button onclick="this.parentElement.remove()" style="background: linear-gradient(45deg, #ffd700, #ff8c00); color: #1a0a2e; border: none; padding: 15px 30px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 16px;">धन्यवाद 🙏</button>
-        `;
-        
-        document.body.appendChild(blessingDiv);
-        
-        // Auto remove after 5 seconds
-        setTimeout(() => {
-            if (blessingDiv.parentElement) {
-                blessingDiv.remove();
-            }
-        }, 5000);
-    }
-
     // Show share modal
     function showShareModal() {
         const completedCount = allDays.filter(d => d.day > 0 && d.completed).length;
@@ -3358,6 +3194,59 @@
         
         updateSocialShareLinks(completedCount, completedCount, progressPercentage);
         document.getElementById('shareModal').style.display = 'flex';
+        
+        // Auto screenshot functionality
+        setTimeout(() => {
+            captureAndShareScreenshot();
+        }, 500);
+    }
+
+    // Capture screenshot and share
+    function captureAndShareScreenshot() {
+        const shareImage = document.getElementById('shareImage');
+        
+        html2canvas(shareImage, {
+            backgroundColor: null,
+            scale: 2,
+            useCORS: true
+        }).then(canvas => {
+            // Convert canvas to blob
+            canvas.toBlob(blob => {
+                const file = new File([blob], 'sankalp-progress.png', { type: 'image/png' });
+                
+                // Update share buttons with the screenshot
+                updateShareButtonsWithImage(file);
+            });
+        });
+    }
+
+    // Update share buttons with image
+    function updateShareButtonsWithImage(imageFile) {
+        const userData = JSON.parse(localStorage.getItem('sankalp_user') || '{}');
+        const userName = userData?.userName || currentUser || 'User';
+        const challengeInfo = selectedChallenge ? `${selectedChallenge.name} ${selectedChallenge.emoji}` : userData.challengeName || 'Personal Growth';
+        const completedCount = allDays.filter(d => d.day > 0 && d.completed).length;
+        const progressPercentage = Math.round((completedCount / challengeDuration) * 100);
+        
+        const shareText = `🕉️ SANKALP Challenge Progress!\n\n👤 Name: ${userName}\n🎯 Challenge: ${challengeInfo}\n✅ Days Completed: ${completedCount}/${challengeDuration}\n📊 Progress: ${progressPercentage}%\n\n💪 Transforming my life one day at a time!\n\n🌐 Join me: https://shailuk2023-create.github.io/sankalp/\n\n#SANKALP #Challenge #PersonalGrowth #Mindfulness`;
+
+        // Update WhatsApp share with image
+        document.getElementById('whatsappShare').addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            if (navigator.share) {
+                navigator.share({
+                    files: [imageFile],
+                    text: shareText
+                }).catch(console.error);
+            } else {
+                // Fallback for WhatsApp Web
+                const url = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+                window.open(url, '_blank');
+            }
+        });
+
+        // Update other share buttons similarly...
     }
 
     // Update social share links
@@ -3532,7 +3421,7 @@
         document.getElementById('resetModal').style.display = 'none';
     }
 
-    async function resetChallenge() {
+    function resetChallenge() {
         try {
             // Clear local data
             allDays = [];
@@ -3652,6 +3541,17 @@
 
     // Change background every 30 seconds
     setInterval(rotateBackground, 30000);
+
+    // Rotate mantras every 10 seconds
+    setInterval(() => {
+        currentMantraIndex = (currentMantraIndex + 1) % mantras.length;
+        const mantraElement = document.getElementById('mantraText');
+        mantraElement.style.animation = 'none';
+        setTimeout(() => {
+            mantraElement.textContent = mantras[currentMantraIndex].split(' - ')[0];
+            mantraElement.style.animation = 'fadeIn 1s ease-in';
+        }, 50);
+    }, 10000);
 
     // Initialize app
     function initializeApp() {
